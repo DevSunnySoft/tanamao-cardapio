@@ -1,0 +1,208 @@
+<div class="app-sheet" >
+  <header class="app-title" >
+    <button class="bt-icon"></button>
+
+    <h1>{{company.name}}</h1>
+
+    <button class="mat-button mat-stroked-button" (click)="onClickOrder()" >
+      <span class="mat-icon" >local_dining</span>&nbsp;{{company.pocid}}
+    </button>
+  </header>
+
+  <app-order-alert></app-order-alert>
+
+  <ng-template [ngIf]="demandingCategories">
+    <div class="empty-bar" style="width: 60%; height: 19px"></div>
+    <div class="empty-bar" style="width: 100%; height: 19px"></div>
+  </ng-template>
+  
+  <app-categories #categoriesElement [categories]="categories" [selectedCategoryId]="selectedCategory?._id"
+    (select)="onSelectCategory($event)">
+  </app-categories>
+</div>
+
+<ng-template [ngIf]="selectedCategory" >
+  <div class="app-sheet" style="margin-top: -8px" >
+    <div *ngIf="selectedCategory.qtdselection > 1" id="division-list"
+      class="app-content-section division-list centralized min-gap">
+      <h4>
+        Divisão de sabores <br />
+        <small>Selecione a quantidade de sabores que será divido</small>
+      </h4>
+      <ul class="ul ul-grid scroll-x">
+        <li *ngFor="let n of [].constructor(selectedCategory.qtdselection); let i = index">
+          <button class="mat-button rounded mat-flat-button" [ngClass]="[(i+1) === qtdselection ? 'primary' : 'basic']"
+            (click)="onClickSelectQtdSelection(i + 1)">
+            <strong>{{i + 1}}</strong>
+            <span>{{i === 0 ? 'Sabor' : 'Sabores'}}</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  
+    <div class="app-main-form">
+      <form (submit)="onSubmitFormSearch($event);txSearch.blur()" appearance="fill">
+        <button class="rounded bt-transparent" mat-icon-button matSuffix aria-label="Buscar">
+          <span class="mat-icon">search</span>
+        </button>
+        <input #txSearch type="search" [formControl]="txproductsearch" name="search"
+          class="bt-transparent main-search-text" [placeholder]="'Buscar em ' + selectedCategory.name"
+          aria-label="Digite a sua busca" autocomplete="off" />
+      </form>
+    </div>
+
+    <ul class="ul ul-grid scroll-x mat-chips">
+      <li *ngFor="let list of sortList">
+        <button (click)="onClickOrderBy(list.value)" class="mat-button color-primary"
+          [ngClass]="[filters && filters.orderby === list.value ? 'primary' : 'basic']">
+          <span>{{list.label}}</span>
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <div #catalog class="catalog">
+    <div class="catalog-page">
+      <div class="catalog-items products app-section" *ngFor="let product of products.data; let i = index" >
+        <div class="catalog-item-photo">
+          <div class="catalog-item-photo-container centralized" *ngIf="product.images.length > 0">
+            <img appImgLazy [src]="getProductMiniature(product.images)" [zoomed]="getProductImage(product.images)" />
+          </div>
+        </div>
+
+        <div class="catalog-item-title">
+          <div class="promo color-accent" *ngIf="product.campaign">{{product.campaign.name}}</div>
+          <div class="catalog-title-first">
+            <div>
+              <div class="price color-accent" *ngIf="product.campaign === undefined; else withCampaignTemplate">
+                <span>R$</span> {{ product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+              </div>
+
+              <ng-template #withCampaignTemplate>
+                <div class="price canceled">
+                  <span>de R$</span> 
+                  <del>
+                    {{product.campaign?.oldcashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+                  </del>
+                </div>
+                <div class="price">
+                  <span>por R$</span> {{ product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+                </div>
+              </ng-template>
+            </div>
+          </div>
+          <p>{{product.product}}</p>
+        </div>
+
+        <div class="catalog-item-description">
+          <small>{{product.description}}</small>
+        </div>
+
+        <div class="catalog-item-action">
+          <ng-template [ngIf]="readonlyCatalog === false">
+            <ng-template
+              [ngIf]="product.isavailable === false || (product.isavailable === true && product.supplymanagement === true && product.stock <= 0)"
+              [ngIfElse]="availableTemplate">
+              <small>Indisponível no momento</small>
+            </ng-template>
+
+            <ng-template #availableTemplate>
+              <ng-template [ngIf]="selectedCategory.categorytype === 'D'" [ngIfElse]="foodTemplate" >
+                <ng-template [ngIf]="selecteddrinks[product._id]" [ngIfElse]="notSelected" >
+                  <button class="mat-button mat-stroked-button color-warn" (click)="onClickDeleteDrink(product._id)" >
+                    <span class="mat-icon" >delete</span>
+                  </button>
+                  &nbsp;
+                  <mat-qtd-selector 
+                    [minqtd]="1" 
+                    [stock]="product.stock"
+                    [supplymanagement]="false"
+                    [measure]="product.measure"
+                    [localquantity$]="selecteddrinks[product._id].asObservable()"
+                    (qtd)="onClickAddDrink(product, $event)" >
+                  </mat-qtd-selector>
+                </ng-template>
+                
+                <ng-template #notSelected >
+                  <button
+                    type="button" class="mat-button mat-flat-button color-primary mat-button-buy"
+                    (click)="onClickProduct($event, product)"  >Quero Este</button>
+                </ng-template>
+              </ng-template>
+
+              <ng-template #foodTemplate >
+
+                <ng-template [ngIf]="hasProductInOrder(selectedItems, product._id)" [ngIfElse]="notSelected">
+                  <button (click)="onClickDeleteProduct(product._id)" class="mat-button mat-stroked-button color-warn">
+                    <span class="mat-icon">delete</span>
+                  </button>
+    
+                  <button class="mat-button mat-stroked-button color-accent" (click)="onClickProduct($event, product)">
+                    <span class="mat-icon" inline>add_circle</span>
+                  </button>
+                </ng-template>
+    
+                <ng-template #notSelected>
+                  <button type="button" class="mat-button mat-flat-button color-primary mat-button-buy"
+                    (click)="onClickProduct($event, product)">Quero Este</button>
+                </ng-template>
+
+              </ng-template>
+            </ng-template>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+  
+<div *ngIf="demanding" class="centralized">
+  <div class="spinner"></div>
+</div>
+
+<br />
+<br />
+<br />
+
+<div class="app-nav">
+  <ul class="ul">
+    <li>
+      <button class="bt-icon" (click)="onClickQrScanner()">
+        <span class="mat-icon icon-outlined">qr_code_scanner</span>
+        <label>Escanear</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickUser()">
+        <span class="mat-icon icon-outlined ">account_circle</span>
+        <label>Usuário</label>
+      </button>
+    </li>
+
+    <li>
+      <button (click)="onClickHome()" class="bt-icon">
+        <span class="mat-icon">
+          <img alt="Logotipo do Ta na mão" class="icon-button-logo" src="../../assets/icons/asset_2.png" width="32"
+            height="32">
+        </span>
+        <label>Início</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickOrder()" >
+        <span class="mat-icon icon-outlined">receipt_long</span>
+        <label>Pedido</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" [attr.badge]="items.length" [matBadgeHidden]="items.length === 0"
+        (click)="onClickBasket()">
+        <span class="mat-icon icon-outlined">shopping_basket</span>
+        <label>Cesta</label>
+      </button>
+    </li>
+  </ul>
+</div>

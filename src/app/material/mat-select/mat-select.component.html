@@ -1,0 +1,19 @@
+<input #input readonly [value]="label" />
+<mat-menu position="after" (onShow)="onMenuShow()" (mousedown)="onMouseDownCombo()">
+  <div class="mat-menu-bg">
+    <ng-template matMenuContent>
+      <div class="app-section">
+        <h4>{{titlelabel}}</h4>
+      </div>
+
+      <ul *ngIf="data.length > 0; else emptyTemplate" class="ul">
+        <li *ngFor="let item of data" (click)="onClickOption(item)">
+          {{item[labelkey]}}
+        </li>
+      </ul>
+      <ng-template #emptyTemplate>
+        <p>{{emptylabel}}</p>
+      </ng-template>
+    </ng-template>
+  </div>
+</mat-menu>

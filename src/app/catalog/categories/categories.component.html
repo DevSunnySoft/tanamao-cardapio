@@ -1,0 +1,44 @@
+<div class="categories-list">
+  <ul #scrollableContainer class="ul ul-grid scroll-x" id="categories-list">
+    <li #appHorizontalMenuItem *ngFor="let category of categories$ | async" class="centralized"
+      [id]="'categories-list-' + category._id" [ngClass]="{'selected': isCategorySelected(category)}">
+
+      <ng-template [ngIf]="category.children.length === 0" [ngIfElse]="parentCategoryTemplate">
+        <button type="button" (click)="onClickSelectCategory(category, $event)" class="mat-button bt-transparent">
+          <span>{{category.name}}</span>
+        </button>
+      </ng-template>
+
+      <ng-template #parentCategoryTemplate>
+        <button type="button" (click)="onClickSelectCategory(category, $event)" class="mat-button bt-transparent">
+          <span>{{category.name}}</span>
+          <span *ngIf="getSelectedChildCategory(category) as child">: {{child.name}}</span>
+          <span class="mat-icon icon-more" *ngIf="category.children.length > 0">unfold_more</span>
+        </button>
+      </ng-template>
+
+      <div class="categories-list-border"></div>
+    </li>
+  </ul>
+
+  <div class="divider min-gap"></div>
+</div>
+
+<mat-menu position="after" >
+  <ng-template matMenuContent >
+    <div *ngIf="parentCategory$ | async as pcategory" >
+      <div class="app-section">
+        <h4>
+          Selecione uma opção ({{pcategory.name}})
+        </h4>
+      </div>
+      <ul class="ul" >
+        <li *ngFor="let subcategory of pcategory.children" 
+          class="mat-option-element" 
+          (click)="onClickSelectCategory(subcategory)" >
+          {{subcategory.name}}
+        </li>
+      </ul>  
+    </div>
+  </ng-template>
+</mat-menu>

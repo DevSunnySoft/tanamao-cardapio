@@ -1,0 +1,86 @@
+<header class="app-title">
+  <button class="bt-icon color-basic" mat-icon-button aria-label="Voltar" (click)="onClickBack()" >
+    <span class="mat-icon" >navigate_before</span>
+  </button>
+  <h1>Cesta de compra</h1>
+  <button class="bt-icon color-basic" mat-icon-button aria-label="Cancelar" (click)="onClickClear()" >
+    <span class="mat-icon" >delete_forever</span>
+  </button>
+</header>
+
+<div class="app-sheet" >
+  <div *ngIf="(items$ | async) as items">
+    <ng-template [ngIf]="items.length > 0" [ngIfElse]="noBasketItem">
+      <h4 class="centralized color-accent">{{items.length}} pedido{{items.length > 1 ? 's' : ''}} não enviado{{items.length > 1 ? 's' : ''}}</h4>
+      <app-basket-items></app-basket-items>
+
+      <br />
+      
+      <div class="app-actions centralized">
+        <button class="mat-button mat-stroked-button color-primary" (click)="onClickKeep()" >
+          <span class="mat-icon">arrow_back</span>
+          Continuar escolhendo
+        </button>
+
+        <button
+          class="mat-button primary mat-flat-button"
+          (click)="onClickNavigateNext()" >
+          Enviar pedido <span class="mat-icon">arrow_forward</span>
+        </button>
+      </div>
+
+      <div *ngIf="isLoading" class="centralized">
+        <br/>
+        <div class="spinner"></div>
+      </div>
+    </ng-template>
+
+    <ng-template #noBasketItem><p class="centralized">Nenhum ítem para ser exibido</p></ng-template>
+  </div>
+</div>
+
+<br/>
+<br/>
+<br/>
+
+<div class="app-nav">
+  <ul class="ul">
+    <li>
+      <button class="bt-icon" (click)="onClickQrScanner()">
+        <span class="mat-icon icon-outlined">qr_code_scanner</span>
+        <label>Escanear</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickUser()">
+        <span class="mat-icon icon-outlined ">account_circle</span>
+        <label>Usuário</label>
+      </button>
+    </li>
+
+    <li>
+      <button (click)="onClickHome()" class="bt-icon">
+        <span class="mat-icon">
+          <img alt="Logotipo do Ta na mão" class="icon-button-logo" src="../../assets/icons/asset_2.png" width="32"
+            height="32">
+        </span>
+        <label>Início</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickOrder()" >
+        <span class="mat-icon icon-outlined">receipt_long</span>
+        <label>Pedido</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickBasket()">
+        <span class="mat-icon" >shopping_basket</span>
+        <label>Cesta</label>
+      </button>
+    </li>
+  </ul>
+</div>

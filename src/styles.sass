@@ -1,1 +1,391 @@
-/* You can add global styles to this file, and also import other style files */
+:root
+  --font-default: #313142
+  --main-bg-color: #f0f3fc
+  --section-color: #ffffff
+  --stroked-border: #e5e5e5
+  --primary: #f19066
+  --warn: #ff1744
+  --accent: #e77f67
+  //--basic: #ebeffa
+  --basic: rgba(0,0,0,.05)
+  --default-icon: rgba(13, 13, 15)
+  --light-gray: #eceff7
+  --stroke: #cdcfd6
+  --input: #ffffff
+  --color-wipedout: #36364d
+  --free: #11d3b9 
+  --read: #039be5
+
+body
+  margin: 0
+  padding: 0
+  background-color: var(--main-bg-color)
+  overflow: hidden
+
+h2, h4, h5, p, h3
+  color: var(--font-default)
+  margin: 0
+  padding: 0
+
+h1
+  color: var(--color-wipedout)
+  margin: 0
+  padding: 0
+  font-weight: bold
+  font-size: 14px
+
+h4
+  margin: 10px 0
+  font-size: 14px
+
+p, h5
+  font-size: 14px
+  font-weight: normal
+
+*
+  font-family: 'Poppins', sans-serif
+
+.align-right
+  text-align: right
+
+.align-justify
+  text-align: justify
+  
+.mat-icon
+  font-variation-settings: 'FILL' 1
+  font-family: "Material Symbols Rounded"
+  font-size: inherit
+  color: inherit
+  text-align: inherit
+
+.icon-outlined
+  font-variation-settings: 'FILL' 0
+
+.centralized, .align-center
+  text-align: center
+
+.bt-icon, .bt-transparent
+  border: none
+  outline: none
+  background-color: transparent
+
+.bt-icon-text
+  display: flex
+  flex-direction: column
+  align-items: center
+
+.bt-icon
+  font-size: 28px
+
+.app-title
+  display: grid
+  grid-template-columns: 40px auto 40px
+  justify-items: center
+  align-items: center
+
+.app-sheet
+  padding: 8px
+
+.app-section
+  padding: 8px
+  background-color: var(--section-color)
+
+.divider
+  background-color: var(--light-gray)
+  height: 1px
+
+.ul, .ul li
+  margin: 0
+  padding: 0
+
+.ul li
+  list-style: none
+
+.mat-button
+  display: inline-flex
+  flex-direction: row
+  align-items: center
+  justify-content: center
+  height: 40px
+  border-radius: 20px
+  padding: 0 16px
+  border: none
+  outline: none
+  font-size: 16px
+  background-color: transparent
+  color: var(--font-default)
+
+.mat-button, a
+  cursor: pointer
+
+.mat-stroked-button
+  background-color: var(--main-bg-color)
+  border: solid var(--stroke) 1px
+  font-weight: 500
+
+.mat-button.loading
+  background-color: var(--stroke)
+
+.mat-button[disabled], .mat-flat-button
+  background-color: var(--light-gray)
+
+.mat-flat-button.basic
+  background-color: var(--basic) !important
+
+.mat-flat-button.primary
+  color: #ffffff !important
+  background-color: var(--primary) !important
+
+.mat-button .mat-icon
+  font-size: 26px
+  
+.mat-chips button.basic
+  background-color: var(--basic)
+  color: var(--color-wipedout)
+
+.wipedout
+  background-color: var(--light-gray)
+  padding: 1px 2px
+
+small, .color-wipedout
+  color: var(--color-wipedout)
+
+small
+  font-size: 13px
+
+.price
+  display: inline-block
+  font-size: 16px
+  vertical-align: middle
+  font-weight: 500
+  line-height: 18px
+
+.price span
+  font-size: 10px
+  vertical-align: top
+  line-height: 18px
+
+.ul span, .nowrap
+  white-space: nowrap
+
+.ul-grid
+  display: grid
+
+.listview
+  display: flex
+  flex-direction: column
+
+.listview li
+  display: grid
+  grid-template-rows: 60px
+  grid-template-columns: 40px auto 30px
+  align-items: center
+
+.listview .mat-icon
+  font-size: 28px
+
+.box-shadow
+  box-shadow: 0 0 10px var(--light-gray)
+
+.scroll-x
+  grid-auto-flow: column
+  grid-template-rows: auto
+  overflow-x: auto
+  overflow-y: hidden
+
+.app-nav, .app-fixed-action
+  position: fixed
+  width: 100vw
+  direction: row
+  bottom: 0
+  left: 0
+  z-index: 9
+  background-color: var(--section-color)
+  border-top: solid var(--light-gray) 2px
+
+.app-nav button
+  display: flex
+  flex-direction: column
+  align-items: center
+  color: var(--default-icon)
+  width: 60px
+  cursor: pointer
+
+.app-nav label
+  font-size: 13px
+
+.app-nav button:hover
+  color: rgba(33, 33, 33, .9)
+
+.app-nav ul
+  height: 56px
+  display: flex
+  flex-direction: row
+  align-items: center
+  justify-content: space-around
+
+.empty-bar
+  margin-bottom: 2px
+  border-radius: 8px
+  background-color: rgba(0,0,0,.1)
+
+.mat-bg
+  position: fixed
+  top: 0
+  left: 0
+  width: 100vw
+  height: 100vh
+  z-index: 999
+
+.min-gap
+  margin-bottom: 8px
+
+.color-accent
+  color: var(--accent)
+
+.color-warn
+  color: var(--warn)
+
+.color-primary
+  color: var(--primary)
+
+.color-reversed
+  color: #ffffff
+
+.rounded
+  border-radius: 50%
+
+.mat-badge:before
+  content: attr(badge)
+  position: absolute
+  margin-top: -8px
+  margin-left: -16px
+  border-radius: 10px
+  text-align: center
+  font-size: 12px
+  min-width: 1.5em
+  height: 1.5em
+  line-height: 1.5em
+  background-color: var(--warn)
+  color: #ffffff
+
+.spinner
+  display: inline-flex
+  width: 30px
+  height: 30px
+  border-radius: 50%
+  background: radial-gradient(farthest-side,#fe5b3a 94%,#0000) top/6.4px 6.4px no-repeat, conic-gradient(#0000 30%,#fe5b3a)
+  -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 6.4px),#000 0)
+  animation: spinner-c7wet2 0.8s infinite linear
+
+.detach
+  border: solid var(--warn) 2px
+  border-radius: 10px
+
+.detach:before
+  position: absolute
+  display: block
+  content: attr(data-detach)
+  height: 1.5rem
+  margin-top: -1.5rem
+  margin-left: 10px
+  padding: 0 8px
+  border-top-left-radius: 5px
+  border-top-right-radius: 5px
+  background-color: var(--warn)
+  color: #ffffff
+  line-height: 1.5rem
+  vertical-align: middle
+
+.pulse
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 1)
+  transform: scale(1)
+  animation: pulse 2s infinite
+  
+.blink
+  animation: blink 5s infinite
+
+.mat-display
+  animation: show forwards .3s
+
+.mat-hide
+  animation: hide forwards .3s
+
+@keyframes spinner-c7wet2
+  100%
+    transform: rotate(1turn)
+
+@keyframes pulse
+  0%
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7)
+  70%
+    box-shadow: 0 0 0 10px rgba(0, 0, 0, 0)
+  100%
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0)
+
+@keyframes blink
+  10%
+    opacity: 1
+  15%
+    opacity: 0
+  20%
+    opacity: 1
+
+  25%
+    opacity: 1
+  30%
+    opacity: 0
+  35%
+    opacity: 1
+
+  40%
+    opacity: 1
+  45%
+    opacity: 0
+  50%
+    opacity: 1
+
+@keyframes hide
+  from
+    transform: scale(1, 1)
+  to
+    transform: scale(0, 0)
+
+@keyframes show
+  from
+    transform: scale(0, 0)
+  to
+    transform: scale(1, 1)
+
+@media screen and (max-width: 800px)
+.scroll-x::-webkit-scrollbar
+  display: none
+
+.scroll-x
+  -ms-overflow-style: none
+  scrollbar-width: none
+
+.app-actions
+  display: flex
+  flex-direction: column
+  row-gap: 8px
+
+@media screen and (min-width: 800px) and (max-width: 1365px)
+  h1
+    font-size: 20px
+
+  p, h5
+    font-size: 18px
+
+  small
+    font-size: 14px
+
+@media screen and (min-width: 1366px)
+  h1
+    font-size: 16px
+
+  p, h5
+    font-size: 17px
+
+  small
+    font-size: 15px

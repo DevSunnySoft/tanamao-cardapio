@@ -1,0 +1,82 @@
+<!--<div class="mat-bg" (click)="onClickClose()" >-->
+  <div #dialog class="mat-dialog" id="dialog" (click)="$event.stopPropagation()" [@slideXToggleAnimation] *ngIf="show" >
+    <div class="dialog-body">
+      <header class="app-title dialog-title">
+        <button class="bt-icon color-basic" mat-icon-button (click)="onClickClose()" aria-label="Voltar" >
+          <span class="mat-icon" >navigate_before</span>
+        </button>
+        <h1>Lista de adicionais <small>({{data.data.title}})</small></h1>
+        <button class="bt-icon color-basic" mat-icon-button (click)="onClickClose()" aria-label="Cancelar" >
+          <span class="mat-icon" >check</span>
+        </button>
+      </header>
+
+      <div class="dialog-content">
+        <div class="catalog">
+          <div class="catalog-items products app-section" *ngFor="let additional of data.data.additionals">
+
+            <div class="catalog-item-photo">
+              <div class="catalog-item-photo-container centralized" >
+                <img appLazyImg [src]="loadImage(additional.product.images)" />
+              </div>
+            </div>
+
+            <div class="catalog-item-title">
+              <div class="promo bg-accent" *ngIf="additional.product.campaign" color="accent">
+                {{additional.product.campaign.name}}
+              </div>
+              <div class="catalog-title-first">
+                <div class="price color-accent" *ngIf="additional.product.campaign === undefined; else withCampaignTemplate">
+                  <span>R$</span> {{ additional.product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+                </div>
+
+                <ng-template #withCampaignTemplate>
+                  <div class="price canceled">
+                    <span>de R$</span> <del>{{additional.product.campaign?.oldcashpayment | currency : 'BRL' : '' :
+                      '1.2-2' : 'pt'}}</del>
+                  </div>
+                  <div class="price color-accent" >
+                    <span>por R$</span> {{ additional.product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' :
+                    'pt'}}
+                  </div>
+                </ng-template>
+              </div>
+
+              <p>{{additional.product.product}}</p>
+            </div>
+
+            <div class="catalog-item-description">
+              <small>{{additional.product.description}}</small>
+            </div>
+
+            <div class="catalog-item-action">
+              <ng-template
+                [ngIf]="additional.isavailable === false || (additional.isavailable === true && additional.supplymanagement === true && additional.stock <= 0)"
+                [ngIfElse]="availableTemplate">
+                <label class="mat-small">Indisponível no momento</label>
+              </ng-template>
+
+              <ng-template #availableTemplate>
+                <ng-template [ngIf]="isAdditionalSelected(additional.additionalid)" [ngIfElse]="notSelected">
+                  <button class="mat-button mat-stroked-button color-primary"
+                    (click)="onClickAddComponentAdditional(additional, 1, data.data.orderindex, $event)">Quero este
+                    adicional</button>
+                </ng-template>
+                <ng-template #notSelected>
+                  <button class="mat-button mat-stroked-button color-warn"
+                    (click)="onClickRevertOrderComponent(additional._id, data.data.orderindex)">Retirar adicional</button>
+                </ng-template>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-footer app-actions">
+        <button class="mat-button mat-flat-button primary ripple" (click)="onClickClose()">
+          Ok, já escolhi
+        </button>
+      </div>
+    </div>
+  </div>
+<!--</div>-->

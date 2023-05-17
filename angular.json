@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/tanamao-cardapio",
+            "outputPath": "dist/tanamao-cardapio/browser",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -25,12 +25,42 @@
             "inlineStyleLanguage": "sass",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/manifest.webmanifest",
+              "src/custom-service-worker.js",
+              "src/terms.html",
+              "src/standalone.css"
             ],
             "styles": [
-              "src/styles.sass"
+              "src/styles.sass",
+              {
+                "input": "src/app/utils/styles/mat-radio.sass",
+                "bundleName": "mat-radio-style",
+                "inject": false
+              },
+              {
+                "input": "src/app/utils/styles/mat-menu.sass",
+                "bundleName": "mat-menu-style",
+                "inject": false
+              },
+              {
+                "input": "src/app/utils/styles/mat-form-field.sass",
+                "bundleName": "mat-form-field-style",
+                "inject": false
+              },
+              {
+                "input": "src/app/utils/styles/mat-dialog.sass",
+                "bundleName": "mat-dialog-style",
+                "inject": false
+              }
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/currency.js/dist/currency.min.js",
+              "node_modules/qr-scanner/qr-scanner.umd.min.js",
+              "node_modules/hammerjs/hammer.min.js"
+            ],
+            "serviceWorker": true,
+            "ngswConfigPath": "ngsw-config.json"
           },
           "configurations": {
             "production": {
@@ -93,15 +123,62 @@
             "inlineStyleLanguage": "sass",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/manifest.webmanifest"
             ],
             "styles": [
               "src/styles.sass"
             ],
             "scripts": []
           }
+        },
+        "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/tanamao-cardapio/server",
+            "main": "src/main.server.ts",
+            "tsConfig": "tsconfig.server.json",
+            "inlineStyleLanguage": "sass"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "app-shell": {
+          "builder": "@angular-devkit/build-angular:app-shell",
+          "options": {
+            "route": "shell"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "tanamao-cardapio:build:production",
+              "serverTarget": "tanamao-cardapio:server:production"
+            },
+            "development": {
+              "browserTarget": "tanamao-cardapio:build:development",
+              "serverTarget": "tanamao-cardapio:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "b8a650d0-9160-4f6a-86a4-1bba385b9079"
   }
 }

@@ -1,0 +1,26 @@
+<div class="camera-area">
+  <video id="videoElem" ></video>
+</div>
+
+<div class="app-nav" >
+  <ul class="ul">
+    <li>
+      <button class="bt-icon" (click)="onClickToggleFlash()">
+        <span class="mat-icon">{{flashOn ? 'flash_off': 'flash_on'}}</span>
+        <label>{{flashOn ? 'Desligar' : 'Flash'}}</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickBack()" >
+        <span class="mat-icon">home</span>
+        <label>Início</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" >
+      </button>
+    </li>
+  </ul>
+</div>

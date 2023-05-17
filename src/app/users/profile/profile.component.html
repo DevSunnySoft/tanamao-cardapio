@@ -1,0 +1,86 @@
+<div class="app-sheet">
+  <header class="app-title">
+    <button class="bt-icon" (click)="onClickBack()" >
+      <span class="mat-icon" >navigate_before</span>
+    </button>
+    <h1>Dados do usuário</h1>
+    <button class="bt-icon" (click)="onClickLogout()" >
+      <span class="mat-icon" >logout</span>
+    </button>
+  </header>
+
+  <form [formGroup]="userForm" (submit)="onSave($event)">
+    <div class="app-section" >    
+      <mat-form-field >
+        <div class="mat-flex-field" >
+          <mat-label>Nome</mat-label>
+          <input matInput formControlName="name" />
+        </div>
+      </mat-form-field>
+
+      <mat-form-field >
+        <div class="mat-flex-field" >
+          <mat-label>E-mail</mat-label>
+          <input matInput formControlName="email" readonly />
+        </div>
+      </mat-form-field>
+    </div>
+
+    <div class="app-actions" >
+      <button type="submit" class="mat-button mat-flat-button primary" >Salvar Alterações</button>
+      <button type="button" (click)="onClickBack()" class="mat-button mat-stroked-button color-primary" >Voltar</button>
+      <!--
+      <br/>
+      <button type="button" class="mat-button mat-stroked-button" >Excluir minha conta</button>
+      -->
+      
+    </div>
+  </form>
+</div>
+
+<br />
+<br/>
+<br/>
+
+<div class="app-nav">
+  <ul class="ul">
+    <li>
+      <button class="bt-icon" (click)="onClickQrScanner()">
+        <span class="mat-icon icon-outlined">qr_code_scanner</span>
+        <label>Escanear</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickUser()">
+        <span class="mat-icon">account_circle</span>
+        <label>Usuário</label>
+      </button>
+    </li>
+
+    <li>
+      <button (click)="onClickHome()" class="bt-icon">
+        <span class="mat-icon">
+          <img alt="Logotipo do Ta na mão" class="icon-button-logo" src="../../assets/icons/asset_2.png" width="32"
+            height="32">
+        </span>
+        <label>Início</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickOrder()" >
+        <span class="mat-icon icon-outlined">receipt_long</span>
+        <label>Pedido</label>
+      </button>
+    </li>
+
+    <li *ngIf="items$ | async as items">
+      <button class="bt-icon" [attr.badge]="items.length" [matBadgeHidden]="items.length === 0"
+        (click)="onClickBasket()">
+        <span class="mat-icon icon-outlined">shopping_basket</span>
+        <label>Cesta</label>
+      </button>
+    </li>
+  </ul>
+</div>

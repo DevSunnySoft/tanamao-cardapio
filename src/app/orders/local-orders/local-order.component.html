@@ -1,0 +1,156 @@
+<div class="app-sheet" >
+  <header class="app-title" >
+    <button class="bt-icon" (click)="onClickBack()" >
+      <span class="mat-icon" >navigate_before</span>
+    </button>
+    <h1 >Seus pedidos</h1>
+    <button class="bt-icon" ></button>
+  </header>
+
+  <div class="divider" ></div>
+
+  <div class="app-section" *ngIf="noOrder; else withOrderTemplate" >
+    <p> <strong>Nenhum ítem enviado</strong> </p> <br/>
+    <p>Envie o primeiro pedido, você poderá acompanhá-lo por aqui.</p>
+  </div>
+
+  <ng-template #withOrderTemplate >
+    <!--
+    <p class="align-right summary-title">
+      <small class="wipedout" *ngIf="order.pocstatus > 1" >{{SummaryOrderPocStatusText[order.pocstatus]}}</small> &nbsp;
+      <strong>{{order.pocid}}</strong>
+    </p>
+    -->
+
+    <div *ngIf="isLoading; else readyTemplate" class="centralized" >
+      <br/>
+      <div class="spinner" ></div>
+    </div>
+  
+    <mat-dialog #orderDetailDialog="matDialog" [config]="orderDetailDialogConfig" (close)="onCloseOrderDetail($event)"></mat-dialog>
+    
+    <ng-template #readyTemplate >
+      <div class="app-section">
+        <div class="centralized" *ngIf="sendingOrders" >
+          <p>Enviando seu pedido para produção</p>
+          <p>
+            <small class="color-wipedout" >Aguarde alguns segundos</small>
+          </p>
+          <br/>
+          <div class="spinner" ></div>
+          <br/>
+        </div>
+  
+        <div class="divisor" ></div>
+  
+        <ul class="ul listview" >
+          <li *ngFor="let order of (orders$ | async)" 
+            class="local-order-item"
+            (click)="$event.stopPropagation(); orderDetailDialog.show(order)" >
+
+            <span *ngIf="orderStatusIcon[order.orderstatus] as statusIcon" 
+              [ngClass]="['mat-icon', 'icon-outlined', statusIcon.color]" >
+              {{statusIcon.icon}}
+            </span>
+
+            <div>   
+              <p>
+                {{order.basket.items.length}} 
+                {{order.basket.items.length > 1 ? 'itens' : 'item' }}
+                <small *ngIf="this.summaryorder && this.summaryorder.location" >
+                  na mesa {{this.summaryorder.location }}
+                </small> 
+              </p>
+              <small class="color-wipedout" >
+                {{showDateInfo(order.createdat)}}
+                <!--{{order.createdat | date : "dd/MM/yy HH:mm"}}-->
+              </small>
+            </div>
+
+            <div>
+              <p class="align-right" > <small>{{writeStatusText(order)}}</small> </p>
+              <div>
+                <div *ngIf="order.rejection" class="error-actions" >
+                  <button class="bt-icon" *ngIf="order.rejection.code <= 1" (click)="onClickUpdateQRCode($event)" >
+                    <span class="mat-icon" >qr_code_scanner</span>
+                  </button>
+                  &nbsp;
+                  <button class="mat-button mat-stroked-button color-primary" (click)="onClickRetryOrder($event, order)" >
+                    Re-enviar
+                    <span class="mat-icon inline" >refresh</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <button class="bt-icon" >
+              <span class="mat-icon" >navigate_next</span>
+            </button>
+          </li>
+        </ul>
+  
+        <br/>
+  
+        <div class="app-actions" >
+          <button class="mat-button mat-stroked-button color-primary" (click)="onClickSummary()" >
+            <span class="mat-icon" >local_atm</span>&nbsp;
+            Visualizar a conta
+          </button>
+
+          <button class="mat-button mat-flat-button primary" (click)="onClickHome()" >
+            Continuar pedindo
+          </button>
+        </div>
+      </div>
+  
+      <br/>
+      <br/>
+    </ng-template>
+  </ng-template>
+</div>
+
+<br/>
+<br/>
+<br/>
+
+<div class="app-nav">
+  <ul class="ul">
+    <li>
+      <button class="bt-icon" (click)="onClickQrScanner()">
+        <span class="mat-icon icon-outlined">qr_code_scanner</span>
+        <label>Escanear</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickUser()" >
+        <span class="mat-icon icon-outlined ">account_circle</span>
+        <label>Usuário</label>
+      </button>
+    </li>
+
+    <li>
+      <button (click)="onClickHome()" class="bt-icon">
+        <span class="mat-icon">
+          <img alt="Logotipo do Ta na mão" class="icon-button-logo" src="../../assets/icons/asset_2.png" width="32"
+            height="32">
+        </span>
+        <label>Início</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickSummary()" >
+        <span class="mat-icon icon-outlined" >local_atm</span>
+        <label>Conta</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickBasket()">
+        <span class="mat-icon icon-outlined" >shopping_basket</span>
+        <label>Cesta</label>
+      </button>
+    </li>
+  </ul>
+</div>

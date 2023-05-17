@@ -1,0 +1,62 @@
+.mat-radio-group
+  display: inline-block
+
+.radio-button
+  display: flex
+  align-items: center
+  cursor: pointer
+  margin-bottom: 2px
+
+.radio-button label
+  display: inline-block
+  line-height: 20px
+  padding: 0 5px
+  vertical-align: middle
+
+.mat-radio-button
+  float: left
+  display: inline-block
+  border: solid 2px var(--basic)
+  margin: 0 5px 0 0
+  border-radius: 100%
+  width: 16px
+  height: 16px
+
+.dot-radio-button
+  display: block
+  margin: 3px
+  width: 10px
+  height: 10px
+  border-radius: 5px
+
+.radio-button.active .mat-radio-button
+  border-color: var(--accent)
+
+.radio-button.active .dot-radio-button
+  background-color: var(--accent)
+
+.mat-radio-group.active .mat-radio-button
+  border-color: var(--primary)
+
+.radio-button.active .mat-radio-button::before
+  content: '\0020'
+  position: absolute
+  display: inline-block
+  margin-left: -7px
+  margin-top: -7px
+  animation: rippleshow forwards .3s
+  border-radius: 100%
+  background-color: var(--accent)
+  transform: translate(-50%, -50%)
+  height: 30px
+  width: 30px
+
+@keyframes rippleshow
+  0%
+    transform-origin: center
+    transform: scale(0, 0)
+    opacity: 0
+  100%
+    transform-origin: center
+    transform: scale(1, 1)
+    opacity: .2

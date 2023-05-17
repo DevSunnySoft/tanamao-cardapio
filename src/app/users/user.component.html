@@ -1,0 +1,77 @@
+<div class="app-sheet" >
+  <header class="app-title" >
+    <button  class="bt-icon color-basic" (click)="onClickBack()" >
+      <span class="mat-icon" >navigate_before</span>
+    </button>
+    
+    <h1>Perfil do usuário</h1>
+
+    <button  class="bt-icon color-basic" >
+      <span class="mat-icon" >logout</span>
+    </button>
+  </header>
+
+  <div class="app-section" >
+    <ul class="ul listview">
+      <li (click)="onClickProfile()" >
+        <span class="mat-icon" >manage_accounts</span>
+        <span>Dados de usuário</span>
+        <span class="mat-icon">navigate_next</span>
+      </li>
+      <div class="divisor" ></div>
+
+      <li (click)="onClickLogout()" >
+        <span class="mat-icon" >logout</span>
+        <span>Sair</span>
+        <span></span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<br />
+<br/>
+<br/>
+
+<div class="app-nav">
+  <ul class="ul">
+    <li>
+      <button class="bt-icon" (click)="onClickQrScanner()">
+        <span class="mat-icon icon-outlined">qr_code_scanner</span>
+        <label>Escanear</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickUser()">
+        <span class="mat-icon">account_circle</span>
+        <label>Usuário</label>
+      </button>
+    </li>
+
+    <li>
+      <button (click)="onClickHome()" class="bt-icon">
+        <span class="mat-icon">
+          <img alt="Logotipo do Ta na mão" class="icon-button-logo" src="../../assets/icons/asset_2.png" width="32"
+            height="32">
+        </span>
+        <label>Início</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickOrder()" >
+        <span class="mat-icon icon-outlined">receipt_long</span>
+        <label>Pedido</label>
+      </button>
+    </li>
+
+    <li *ngIf="items$ | async as items">
+      <button class="bt-icon" [attr.badge]="items.length" [matBadgeHidden]="items.length === 0"
+        (click)="onClickBasket()">
+        <span class="mat-icon icon-outlined">shopping_basket</span>
+        <label>Cesta</label>
+      </button>
+    </li>
+  </ul>
+</div>

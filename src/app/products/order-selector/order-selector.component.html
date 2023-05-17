@@ -1,0 +1,295 @@
+<div class="app-sheet">
+  <header class="app-title">
+    <button class="bt-icon color-basic" mat-icon-button (click)="onClickBack()" aria-label="Voltar">
+      <span class="mat-icon">navigate_before</span>
+    </button>
+    <h1>Preferências do preparo</h1>
+    <button class="bt-icon color-basic" mat-icon-button (click)="onClickBack()" aria-label="Cancelar">
+      <span class="mat-icon">delete_forever</span>
+    </button>
+  </header>
+
+  <ng-template [ngIf]="order.header" [ngIfElse]="noOrderTemplate">
+    <mat-dialog #additionalDialog="matDialog" [config]="additionalDialogConfig" (close)="onCloseAdditional($event)"></mat-dialog>
+
+    <div *ngIf="(order.products$ | async) as products">
+      <ng-template [ngIf]="products.length > 0" [ngIfElse]="noOrderTemplate">
+        <div *ngFor="let product of products; let orderindex = index" class="app-section editor-components">
+          <div *ngIf="product.images.length === 1" class="image-viewer centralized">
+            <img appImgLazy [src]="loadImage(product.images, '380x380')" width="auto" height="auto" />
+          </div>
+
+          <h3>
+            {{product.product}} <small *ngIf="order.header.qtdselection > 1">({{orderindex + 1}}º sabor)</small>
+          </h3>
+
+          <div class="catalog-item-description">
+            <small>{{product.description}}</small>
+          </div>
+
+          <div *ngIf="(order.components$[orderindex] | async) as components">
+            <div *ngIf="components.length > 0">
+
+              <h4 class="color-wipedout">Lista de ingredientes</h4>
+
+              <ul class="ul">
+                <li *ngFor="let component of components; let componentindex = index" [id]="component._id">
+                  <ng-template [ngIf]="component.data.length === 1" [ngIfElse]="componentWithOptionsTemplate">
+                    <p>
+                      <ng-template [ngIf]="(component.action === 'R')" [ngIfElse]="notRemovedComponentTemplate">
+                        <a
+                          (click)="onClickRevertOrderComponent(component.action, component.data[0].componentid, orderindex)">
+                          <button class="bt-icon color-basic" aria-label="Re-inserir ingrediente removido">
+                            <span class="mat-icon">remove_circle_outline</span>
+                          </button>
+                          <del>{{component.data[0].product.product}}</del>&nbsp;<small>(Toque para adicionar)</small>
+                        </a>
+                      </ng-template>
+
+                      <ng-template #notRemovedComponentTemplate>
+                        <a
+                          (click)="onClickRevertOrderComponent(component.action, component.data[0].componentid, orderindex)">
+                          <button class="bt-icon color-accent" aria-label="Remover item">
+                            <span class="mat-icon">check_circle_outline</span>
+                          </button>
+
+                          <span *ngIf="component.action === 'A'">+ </span>
+                          <span> {{component.data[0].product.product}}&nbsp;</span>
+
+                          <div class="price color-accent" *ngIf="component.data[0].product.prices.cashpayment > 0">
+                            <span> + R$</span> {{component.data[0].product.prices.cashpayment | currency : 'BRL' : '' :
+                            '1.2-2' : 'pt'}}
+                            &nbsp;
+                          </div>
+                          <small>(Toque para remover)</small>
+                        </a>
+
+                        <ng-template
+                          [ngIf]="component.data[0].product.settings && component.data[0].product.settings.obs && component.data[0].product.settings.obs.length > 0">
+                          <div *ngFor="let obs of component.data[0].product.settings?.obs; let obsindex = index;">
+                            <p class="p-ingredientes-options-label">
+                              {{obs.name | titlecase}}&nbsp;<small>(Escolha uma opção)</small>
+                            </p>
+
+                            <p class="p-ingredientes-options">
+                              <mat-radio-group [value]="obs.selected"
+                                (change)="onChangeObsOptions(orderindex, componentindex, obsindex, $event)">
+                                <mat-radio-button class="main-radio-button"
+                                  *ngFor="let item of obs.data; let obsitemindex = index;" [value]="obsitemindex">
+                                  {{ item | titlecase }}
+                                </mat-radio-button>
+                              </mat-radio-group>
+                            </p>
+                          </div>
+                        </ng-template>
+                      </ng-template>
+                    </p>
+                  </ng-template>
+
+                  <ng-template #componentWithOptionsTemplate>
+                    <p class="p-ingredientes-options-label">
+                      {{component.name | titlecase}}&nbsp;<small>(Escolha {{ component.qtdselection > 1 ? ('até ' +
+                        component.qtdselection +' opções') : 'uma opção'}})</small>
+                    </p>
+
+                    <div class="p-ingredientes-options">
+
+                      <div *ngIf="component.data.length > 10" class="app-main-form">
+                        <form (submit)="onSubmitComponentForm(componentindex);txSearch.blur()"
+                          [formGroup]="filterComponentForm">
+                          <button class="rounded bt-transparent" mat-icon-button matSuffix aria-label="Buscar">
+                            <span class="mat-icon">search</span>
+                          </button>
+                          <input #txSearch type="search" formControlName="search" name="search"
+                            class="bt-transparent main-search-text" placeholder="Buscar uma opção"
+                            aria-label="Digite a sua busca" autocomplete="off" />
+                        </form>
+                      </div>
+
+                      <p
+                        *ngFor="let ingredient of filterComponent(component.data, componentindex); let ingredientindex = index">
+                        <a *ngIf="component.selected.indexOf(ingredientindex) < 0; else notSelectedIngredientOption"
+                          (click)="onChangeComponentOptions(orderindex, componentindex, ingredientindex)">
+                          <button class="bt-icon rounded" aria-label="Selecionar">
+                            <span class="mat-icon icon-outlined">{{component.qtdselection === 1 ?
+                              'radio_button_unchecked'
+                              : 'add_circle_outline'}}</span>
+                          </button>
+                          <span>
+                            {{ingredient.product.product}}
+                            &nbsp;
+                          </span>
+
+                          <div class="price color-accent" *ngIf="ingredient.product.prices.cashpayment > 0">
+                            <span>+ R$</span> {{ingredient.product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2'
+                            :
+                            'pt'}}
+                          </div>
+                        </a>
+
+                        <ng-template #notSelectedIngredientOption>
+                          <ng-template [ngIf]="component.qtdselection === 1" [ngIfElse]="multiTemplate">
+                            <a (click)="onChangeComponentOptions(orderindex, componentindex, ingredientindex)">
+                              <button class="bt-icon rounded color-accent" aria-label="Desmarcar item marcado">
+                                <span class="mat-icon icon-outlined">radio_button_checked</span>
+                              </button>
+                              <span>
+                                {{ingredient.product.product}}
+                                &nbsp;
+                              </span>
+
+                              <div class="price color-accent" *ngIf="ingredient.product.prices.cashpayment > 0">
+                                <span>+ R$</span> {{ingredient.product.prices.cashpayment | currency : 'BRL' : '' :
+                                '1.2-2' : 'pt'}}
+                              </div>
+                            </a>
+                          </ng-template>
+
+                          <ng-template #multiTemplate>
+                            <a>
+                              <button class="bt-icon rounded" aria-label="Selecionar item"
+                                (click)="onPullOutComponentOptions(orderindex, componentindex, ingredientindex)">
+                                <span class="mat-icon icon-outlined">remove_circle_outline</span>
+                              </button>
+                              <span>
+                                {{countComponentOption(orderindex, componentindex, ingredientindex)}}
+                              </span>
+                              <button class="bt-icon rounded"
+                                (click)="onPushComponentOptions(orderindex, componentindex, ingredientindex)"
+                                aria-label="Selecionar item">
+                                <span class="mat-icon icon-outlined">add_circle_outline</span>
+                              </button>
+
+                              <span>
+                                {{ingredient.product.product}}
+                                &nbsp;
+                              </span>
+
+                              <div class="price color-accent" *ngIf="ingredient.product.prices.cashpayment > 0">
+                                <span>+ R$</span> {{ingredient.product.prices.cashpayment | currency : 'BRL' : '' :
+                                '1.2-2' : 'pt'}}
+                              </div>
+                            </a>
+                          </ng-template>
+                        </ng-template>
+                      </p>
+                    </div>
+                  </ng-template>
+                </li>
+              </ul>
+            </div>
+
+            <div *ngIf="demandingadditionals" class="centralized">
+              <div class="spinner"></div>
+            </div>
+
+            <div class="divider min-gap" ></div>
+
+            <div *ngIf="(order.additionals$[orderindex] | async) as additionals" class="centralized">
+              <button mat-button *ngIf="additionals.length > 0" class="mat-flat-button primary" (click)="additionalDialog.show({
+                  additionals: additionals, 
+                  components: components, 
+                  orderindex: orderindex, 
+                  title: product.product })">
+                {{order.header.qtdselection > 1 ? 'Escolher adicionais para este sabor' : 'Escolher adicionais'}}<small class="mat-icon">add</small>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="editor-components">
+          <mat-accordion [containerTemplate]="obsTemplate" label="Digite uma observação">
+            <ng-template #obsTemplate>
+              <div class="app-section" id="obs-box">
+                <p><small>Digite uma observação relacionada ao preparo deste pedido</small></p>
+                <textarea placeholder="Sua observação" [formControl]="txobs" rows="2" maxlength="100" style="width: 100%"></textarea>
+                <p class="align-right"><small>{{obs.length}}/100</small></p>
+              </div>
+            </ng-template>
+          </mat-accordion>
+        </div>
+
+
+        <div class="editor-components" *ngIf="borders.length > 0">
+          <mat-accordion badge="1" [matBadgeHidden]="(order.border$ | async) ? false : true"
+            [containerTemplate]="bordersTemplate" [show]="isborderexpanded" label="Escolha uma borda recheada">
+          </mat-accordion>
+
+          <div class="app-section">
+            <ng-template #bordersTemplate>
+              <ul class="ul">
+                <li *ngFor="let border of borders">
+                  <p *ngIf="isBorderSelected((order.border$ | async), border) === true; else templateNotAdded">
+                    <a (click)="onClickRemoveBorder()">
+                      <button class="bt-icon color-accent" aria-label="Remover item">
+                        <span class="mat-icon">check_circle_outline</span>
+                      </button>
+                      {{border.product.product}}
+                      <div class="price color-accent">
+                        <span> + R$</span> {{border.product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' :
+                        'pt'}}
+                      </div>
+                    </a>
+                  </p>
+
+                  <ng-template #templateNotAdded>
+                    <p>
+                      <a (click)="onClickAddBorder(border.product)">
+                        <button class="bt-icon color-basic" aria-label="Adicionar item">
+                          <span class="mat-icon">add_circle_outline</span>
+                        </button>
+                        {{ border.product.product }}
+                        <div class="price color-accent">
+                          <span> + R$</span> {{border.product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' :
+                          'pt'}}
+                        </div>
+                      </a>
+                    </p>
+                  </ng-template>
+                </li>
+              </ul>
+            </ng-template>
+          </div>
+        </div>
+      </ng-template>
+
+      <div class="app-fixed-action">
+        <div class="app-fixed-action-section" >
+          <div class="app-fixed-action-info align-right">
+            <p *ngIf="order.header.qtdselection > 1">
+              {{ order.header.category!.name }} ({{ order.header.qtdselection + ((order.header.qtdselection > 1) ? '
+              sabores' : ' sabor') }})
+            </p>
+            <p class="price color-accent" *ngIf="order.header.category" >
+              Valor (<span>{{order.header.category.name }}</span>): <span> R$</span> {{(order.price$ | async ) |
+              currency
+              :
+              'BRL' : '' : '1.2-2' : 'pt'}}
+            </p>
+          </div>
+
+          <div class="divider min-gap" ></div>
+
+          <div class="centralized">
+            <button class="mat-button mat-flat-button bt-next" (click)="onClickBuy()">
+              Está perfeito (continuar) <span class="mat-icon">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br />
+    <br />
+    <br />
+    <br />
+  </ng-template>
+
+  <ng-template #noOrderTemplate>
+    <div class="align-center">
+      <br />
+      <p>Nada para fazer aqui</p>
+      <br />
+      <button mat-button class="mat-flat-button primary" (click)="onClickNavigateToCatalog()">Ir às compras</button>
+    </div>
+  </ng-template>

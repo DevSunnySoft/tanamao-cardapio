@@ -1,0 +1,64 @@
+body {
+  font-family: 'Roboto';
+  color: #1c2670
+}
+p{
+  color: #1c2670
+}
+h2 {
+  color: #1c2670;
+  margin: 5px 0;
+  font-size: 28px;
+  font-weight: 500
+}
+.app-book-sheet{
+  padding: 10px 10px 100px 10px
+}
+@media screen and (min-width: 800px) {
+  .app-book-sheet {
+    width: 600px;
+    margin-left: calc(50% - 300px);
+  }      
+}
+.box-shadow {
+  box-shadow: #dad4e4 0 0 15px
+}
+.align-center {
+  text-align: center;
+}
+.icon {
+  font-family: 'Material Icons'
+}
+.bt {
+  padding: 8px 10px;
+  background-color: #2962ff;
+  color: #dad4e4;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+p {
+  text-indent: 2em
+}
+
+.terms p {
+  font-size: 16px !important
+}
+
+.content {
+  display: block;
+  height: 80vh;
+  overflow-y: scroll;
+  width: 100%
+}
+::-webkit-scrollbar{
+  width: 8px
+}
+
+::-webkit-scrollbar-track{
+  background: #f3f3f3}
+
+::-webkit-scrollbar-thumb{
+  background-color: #e0e0e0;
+  border-radius: 5px
+}

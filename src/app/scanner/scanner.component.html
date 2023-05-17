@@ -1,0 +1,40 @@
+<app-scan *ngIf="showScanPage;else firstTemplate" ></app-scan>
+
+<ng-template #firstTemplate >
+  <div class="app-sheet" >
+    <header (click)="onClickBack()" >
+      <h1>Menu Tanamão</h1>
+      <p class="subtitle" >by Sunny Soft</p>
+    </header>
+    <!--
+    <header class="app-title" (click)="onClickBack()" >
+      <button class="bt-icon" >
+        <span class="mat-icon" >navigate_before</span>
+      </button>
+      <h1>Cardápio digital</h1>
+      <button class="bt-icon" ></button>
+    </header>
+    -->
+    <br/>
+    <br/>
+    
+    <div class="app-section" >  
+      <h2>Quer ver o menu?</h2>
+  
+      <div class="centralized" >
+        <button class="bt-scan" (click)="onClickScan()" >
+          Leia o QR code &nbsp; <span class="mat-icon" >qr_code_scanner</span>
+        </button>
+      </div>
+      <br/>
+      <p><strong>Permissões necessárias</strong></p> <br/>
+      <p>
+        <small>Você precisará permitir o acesso a <strong>câmera</strong> do seu dispositivo</small>
+      </p>
+    </div>
+  </div>  
+</ng-template>
+
+<div class="greetings" [ngClass]="{'off': !greetings}" *ngIf="!out" >
+  <h2>Olá <br/> Seja bem-vindo</h2>
+</div>

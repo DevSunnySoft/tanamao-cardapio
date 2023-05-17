@@ -1,0 +1,130 @@
+<div *ngIf="(items$ | async) as items" class="app-basket-sheet">
+  <ng-template [ngIf]="items.length > 0" [ngIfElse]="noBasketItem">
+    <div *ngFor="let basketitem of items" class="app-section basket-item">
+      <ng-template [ngIf]="basketitem.item.product.header" [ngIfElse]="retailTemplate">
+        <div class="basket-item-title">
+          <h5>
+            <ng-template [ngIf]="basketitem.item.product.header.qtdselection > 1"
+              [ngIfElse]="headerOneSelectionTemplate">
+              Combo
+              {{basketitem.item.product.header.category.name}} ({{basketitem.item.product.header.qtdselection}}
+              sabores)</ng-template>
+            <ng-template #headerOneSelectionTemplate>{{basketitem.item.product.data[0].product.product}}
+            </ng-template>
+          </h5>
+          <div>
+            <button class="bt-icon">
+              <span class="mat-icon color-wipedout" (click)="editOrderSelector(basketitem.item.product, basketitem.index)">
+                edit
+              </span>
+            </button>
+            <button class="bt-icon">
+              <span class="mat-icon color-wipedout" (click)="removeOrderItem(basketitem.index, items.length)" >
+                delete
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <div class="basket-item-description">
+          <ng-template [ngIf]="basketitem.item.product.data.length > 1"
+            [ngIfElse]="descriptionOneSelectionTemplate">
+            <div class="basket-grid-flavor-list" *ngFor="let flavor of basketitem.item.product.data">
+              <p>{{flavor.product.product}}</p>
+              <p><small [innerHTML]="getRelevant(flavor.components)"></small></p>
+            </div>
+          </ng-template>
+
+          <ng-template #descriptionOneSelectionTemplate>
+            <p><small [innerHTML]="getRelevant(basketitem.item.product.data[0].components)"></small></p>
+          </ng-template>
+
+          <ng-template [ngIf]="basketitem.item.product.border">
+            <b>Borda:</b> {{basketitem.item.product.border.product}}<br />
+          </ng-template>
+        </div>
+
+        <div *ngIf="basketitem.item.product.obs && basketitem.item.product.obs.length > 0">
+          <small>Observação digitada: {{basketitem.item.product.obs}}</small>
+        </div>
+
+        <div class="basket-item-action">
+          <div>
+            <ng-template [ngIf]="basketitem.item.error" [ngIfElse]="noErrorsTemplate">
+              <div>
+                <small>
+                  {{basketitem.item.error}}
+                </small> <br />
+                <small (click)="removeOrderItem(basketitem.index, items.length)" class="lb-delete-item">Retirar item
+                  da cesta</small>
+              </div>
+            </ng-template>
+
+            <ng-template #noErrorsTemplate>
+              <mat-qtd-selector [minqtd]="1" [stock]="0" [supplymanagement]="false" [measure]="'UN'"
+                [localquantity$]="basketitem.item.qtd" (qtd)="onChangeQtd($event, basketitem.index)">
+              </mat-qtd-selector>
+            </ng-template>
+          </div>
+
+          <div class="price color-accent" >
+            <span>Valor R$</span> {{basketitem.item.price | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template #retailTemplate>
+        <div class="basket-item-title" >
+          <div class="basket-item-title-left" >
+            <img appLazyImg (click)="onClickDetails(basketitem.item.product._id)"
+              *ngIf="basketitem.item.product.images.length > 0"
+              [src]="loadImage(basketitem.item.product.images[0])" [alt]="'Foto de ' + basketitem.item.product.product"
+              height="50px" width="auto"  />
+            <h5 (click)="onClickDetails(basketitem.item.product._id)">
+              {{basketitem.item.product.product}}
+            </h5>
+          </div>
+          <button class="bt-icon">
+            <span class="mat-icon color-wipedout" (click)="removeOrderItem(basketitem.index, basketitem.item.length)">
+              delete
+            </span>
+          </button>
+        </div>
+
+        <div *ngIf="basketitem.item.obs && basketitem.item.obs.length > 0">
+          <small>Observação digitada:</small> {{basketitem.item.obs}}
+        </div>
+
+        <div class="basket-item-action">
+          <div>
+            <ng-template [ngIf]="basketitem.item.error" [ngIfElse]="noErrorsTemplate">
+              <span class="mat-error">{{basketitem.item.error}}</span> <br />
+            </ng-template>
+
+            <ng-template #noErrorsTemplate>
+              <mat-qtd-selector [minqtd]="basketitem.item.product.settings?.minqtd || 1"
+                [stock]="basketitem.item.product.stock"
+                [supplymanagement]="basketitem.item.product.supplymanagement"
+                [measure]="basketitem.item.product.measure" [localquantity$]="basketitem.item.qtd"
+                (qtd)="onChangeQtd($event, basketitem.index)">
+              </mat-qtd-selector>
+            </ng-template>
+          </div>
+
+          <div class="price color-accent">
+            <span>Valor R$</span> {{basketitem.item.price | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </ng-template>
+</div>
+
+<ng-template #noBasketItem>
+  <div class="align-center">
+    <img src="../../../assets/icons/asset_4.png" width="199vw" height="auto" />
+    <p>Você ainda não escolheu nenhum produto</p>
+    <br />
+    <button mat-button class="mat-flat-button primary" (click)="onClickKeep()">Ir às compras</button>
+  </div>
+</ng-template>

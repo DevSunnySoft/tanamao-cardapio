@@ -1,0 +1,60 @@
+<div class="app-sheet" >
+
+  <header class="app-title" >
+    <button class="bt-icon" (click)="onClickBack()" >
+      <span class="mat-icon" >navigate_before</span>
+    </button>
+    <h1>Fechamento</h1>
+    <button class="bt-icon" ></button>
+  </header>
+  
+  <div class="divider" ></div>
+  <br/>
+  
+  <div class="app-section" *ngIf="order; else noOrderTemplate" >
+    <ng-template [ngIf]="order.pocstatus < SummaryOrderPocStatus.close_request" >
+      <p class="centralized"><strong>Você quer fechar a conta?</strong></p> <br/>
+      <p>Ao fechar a conta você <strong>não</strong> poderá lançar novos pedidos.</p> <br/>
+
+      <p>Dúvidas? Solicite a ajuda de um garçom.</p>
+  
+      <br/>
+      <div class="divider" ></div>
+
+      <br/>
+      
+      <div class="app-actions">
+        <button class="mat-button mat-flat-button primary" (click)="onClickConfirm()" >
+          Sim, fechar a conta
+        </button>
+      </div>
+    </ng-template>
+
+    <ng-template  [ngIf]="order.pocstatus === SummaryOrderPocStatus.close_request"  >
+      <p class="centralized" >Estamos fechando a sua conta.</p> <br/>
+      <p>Por gentileza, <strong>dirija-se ao caixa</strong> ou <strong>chame um garçom</strong> para realizar o pagamento da sua conta.</p>
+    </ng-template>
+
+    <ng-template  [ngIf]="order.pocstatus === SummaryOrderPocStatus.pre_closed"  >
+      <p class="centralized" >Seu ponto está em pré-fechamento.</p> <br/>
+      <p>
+        Por gentileza, <strong>dirija-se ao caixa</strong> ou <strong>chame um garçom</strong> para realizar o pagamento da sua conta.
+      </p>
+    </ng-template>
+
+    <ng-template  [ngIf]="order.pocstatus === SummaryOrderPocStatus.closed"  >
+      <p class="centralized" >Sua conta está finalizada.</p> <br/>
+      <p>Idenficamos que o seu pedido foi finalizado e pago. Obrigado!</p>
+
+      <div class="app-actions" >
+        <button class="mat-button mat-stroked-button color-primary" >Novo pedido</button>
+      </div>
+    </ng-template>
+  </div>
+
+  <ng-template #noOrderTemplate >
+    <div class="centralized" >
+      <div class="spiner" ></div>
+    </div>
+  </ng-template>
+</div>

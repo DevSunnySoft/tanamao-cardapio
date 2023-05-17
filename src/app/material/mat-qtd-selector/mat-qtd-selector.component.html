@@ -1,0 +1,41 @@
+<div class="mat-qtd-selector">
+  <button mat-button class="mat-flat-button bt-qtd-selector" [matMenuTriggerFor]="quantityMenu">
+    {{ getQuantityDescription(localquantity$ | async) }}
+    <span class="mat-icon">keyboard_arrow_down</span>
+  </button>
+
+  <mat-menu #quantityMenu="matMenu" (onShow)="onMenuShow()">
+    <div class="mat-menu-bg">
+      <ng-template matMenuContent>
+        <div class="app-section">
+          <h4>Selecione uma quantidade</h4>
+        </div>
+
+        <ul class="ul">
+          <li *ngFor="let item of quantityoptions" (click)="onClickChangeLocalQuantity(item.key)">
+            {{ item.caption }}
+          </li>
+        </ul>
+
+        <div class="app-section">
+          <div class="menu-item-quantity">
+            <p *ngIf="minqtderror" class="mat-small color-warn">Quantidade mínima de compra é {{minqtd}} {{measure}}</p>
+            <form class="qtd-selector" (submit)="onSubmitQuantity($event)">
+              <mat-form-field>
+                <div class="mat-flex-field">
+                  <small matPrefix>&nbsp;{{ measure }}&nbsp;</small>
+                  <mat-label>Digite:</mat-label>
+                  <input matInput [formControl]="quantityControl" type="number" [min]="minqtd || 1"
+                    [step]="measure === 'KG' ? .5 : 1" lang="pt" />
+                  <button matSuffix class="bt-icon" type="submit">
+                    <span class="mat-icon">send</span>
+                  </button>
+                </div>
+              </mat-form-field>
+            </form>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </mat-menu>
+</div>

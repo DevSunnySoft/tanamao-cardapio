@@ -1,0 +1,54 @@
+<div #dialog class="mat-dialog" id="dialog" (click)="$event.stopPropagation()" [@slideXToggleAnimation] *ngIf="show" >
+  <div class="dialog-body">
+    <header class="app-title dialog-title">
+      <button class="bt-icon color-basic" mat-icon-button (click)="onClickClose()" aria-label="Voltar" >
+        <span class="mat-icon" >navigate_before</span>
+      </button>
+      <h1><small></small></h1>
+      <button class="bt-icon color-basic" mat-icon-button aria-label="Cancelar" ></button>
+    </header>    
+
+    <div class="dialog-content">
+      <br/>
+      <p><small>Precisamos localiza-lo</small></p>
+      <h3>Informe o número da sua mesa</h3>
+
+      <form [formGroup]="locationForm" (submit)="onSubmit($event)" >
+        <mat-form-field >
+          <div class="mat-flex-field" >
+            <mat-label>Digite o número da mesa</mat-label>
+            <input matInput type="number" formControlName="location" />
+          </div>
+
+          <p class="mat-error color-warn" *ngIf="location.touched && location.errors && location.errors['required']" >
+            Digite o número da sua mesa
+          </p>
+          <p class="mat-error color-warn" *ngIf="location.touched && location.errors && location.errors['pattern']" >
+            Número inválido
+          </p>
+        </mat-form-field>
+  
+        <div class="app-actions" >
+          <button type="submit" class="mat-input mat-flat-button primary"> Confirmar </button>
+        </div>
+      </form>
+      
+
+      <br/>
+      <div class="divider" ></div> <br/>
+      <p>Dicas</p> <br/>
+      <!--
+        <p>
+        <small>Para que o garçom possa entregar seus pedidos, precisamos saber o número da mesa onde você está sentado.</small>
+      </p> <br/>
+      -->
+      <p>
+        <small>Atenção, <strong>não</strong> informe o número da sua comanda. Precisamos do número que está em cima da sua mesa. </small>
+      </p> <br/>
+
+      <p>
+        <small>Se você não sabe o número da sua mesa, por favor solicite a ajuda de um garçom.</small>
+      </p>
+    </div>
+  </div>
+</div>

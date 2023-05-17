@@ -1,0 +1,35 @@
+.basket-item
+  margin-bottom: 2px
+
+.basket-item-title, .basket-item-action, .basket-item-title-left
+  display: flex
+  width: 100%
+  flex-direction: row
+  align-items: center
+
+.basket-item-title, .basket-item-action
+  justify-content: space-between
+
+.basket-item-action
+  padding-top: 3px
+  margin-top: 2px
+  border-top: solid var(--main-bg-color) 1px
+
+.basket-grid-flavor-list
+  margin-top: 5px
+
+@media only screen and (min-width: 799px)
+  .app-basket-sheet
+    display: flex
+    flex-direction: row
+
+  .app-basket-sheet div:nth-child(1)
+    padding-bottom: 10px
+
+@media only screen and (min-width: 800px)
+  .app-basket-sheet
+    display: grid
+    grid-template-columns: auto 400px
+
+  .app-basket-sheet div:nth-child(1)
+    padding-right: 10px

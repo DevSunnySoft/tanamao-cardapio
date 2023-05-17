@@ -1,0 +1,194 @@
+<div class="app-sheet" >
+  <header class="app-title" >
+    <button class="bt-icon" (click)="onClickBack()" >
+      <span class="mat-icon" >navigate_before</span>
+    </button>
+    <h1>Resumo da conta</h1>
+    <button class="bt-icon" ></button>
+  </header>
+
+  <div class="divider" ></div>
+  
+  <ng-template [ngIf]="noOrder" [ngIfElse]="orderTemplate" >
+    <div class="app-section" >
+      <p> <strong>Nenhum ítem enviado</strong> </p> <br/>
+      <p>Envie o primeiro pedido, você poderá acompanhá-lo por aqui.</p>
+    </div>
+  </ng-template>
+
+  <ng-template #orderTemplate >
+    <div *ngIf="order" class="app-section" >
+      <p class="align-right summary-title">
+        <small class="wipedout" *ngIf="order.pocstatus > 1" >{{SummaryOrderPocStatusText[order.pocstatus]}}</small> &nbsp;
+        <strong>{{order.pocid}}</strong>
+      </p>
+  
+      <ng-template [ngIf]="order.summary" [ngIfElse]="notSummaryTemplate" >
+  
+        <ul class="ul" >
+          <li> <strong>Pedidos não pagos</strong> </li>
+    
+          <ng-template [ngIf]="order.summary.pendent.items.length > 0" [ngIfElse]="emptyPendentTemplate" >
+            <li class="li-summary" *ngFor="let item of order.summary.pendent.items" >
+              <div class="summary-row" >
+                <span>{{item.product}}</span>
+                <small>quantidade: <strong>{{formatQuantity(item.quantity)}}</strong></small>
+              </div>
+              <div class="summary-row">
+                <small>Autor: {{item.user}}</small>
+                <small class="align-right" >
+                  Valor unitário: <strong>R$ {{item.valueun | currency : 'BRL' : '' : '1.2-2' : 'pt'}}</strong>
+                </small>
+              </div>
+              <div class="summary-row">
+                <div></div>
+                <small>
+                  Valor: <strong>R$ {{item.value | currency : 'BRL' : '' : '1.2-2' : 'pt'}}</strong>
+                </small>
+              </div>
+            </li>
+            <li class="align-right" *ngIf="order.summary.pendent.couverttax" >
+              <small>Couvert</small>&nbsp;<div class="price color-warn"><span>R$</span> {{order.summary.pendent.couverttax| currency : 'BRL' : '' : '1.2-2' : 'pt'}}</div>
+            </li>
+    
+            <li class="align-right"  *ngIf="order.summary.pendent.subtotal" >
+              <small>Sub-Total</small>&nbsp;<div class="price color-warn"><span>R$</span> {{order.summary.pendent.subtotal | currency : 'BRL' : '' : '1.2-2' : 'pt'}}</div>
+            </li>
+    
+            <li class="align-right" *ngIf="order.summary.pendent.servicetax" >
+              <small>Taxa de serviço</small>&nbsp;<div class="price color-warn"><span>R$</span> {{order.summary.pendent.servicetax | currency : 'BRL' : '' : '1.2-2' : 'pt'}}</div>
+            </li>
+    
+            <li class="align-right" >
+              <small>Total</small>&nbsp;<div class="price color-warn"><span>R$</span> {{order.summary.pendent.total | currency : 'BRL' : '' : '1.2-2' : 'pt'}}</div>
+            </li>
+          </ng-template>
+    
+          <ng-template #emptyPendentTemplate >
+            <li class="centralized" >
+              <small>Nenhum ítem para ser exibido</small>
+            </li>
+          </ng-template>
+        </ul>
+    
+        <br/>
+    
+        <ul class="ul" *ngIf="order.summary" >
+          <li><strong>Pedidos pagos</strong></li>
+    
+          <ng-template [ngIf]="order.summary.billed.items.length > 0" [ngIfElse]="emptyBilledTemplate" >
+            <li class="li-summary" *ngFor="let item of order.summary.billed.items" >
+              <div class="summary-row" >
+                <span>{{item.product}}</span>
+                <small>quantidade: <strong>{{formatQuantity(item.quantity)}}</strong></small>
+              </div>
+              <div class="summary-row">
+                <small>Autor: {{item.user}}</small>
+                <small class="align-right" >
+                  Valor unitário: <strong>R$ {{item.valueun | currency : 'BRL' : '' : '1.2-2' : 'pt'}}</strong>
+                </small>
+              </div>
+              <div class="summary-row">
+                <div></div>
+                <small>
+                  valor: <strong>R$ {{item.value | currency : 'BRL' : '' : '1.2-2' : 'pt'}}</strong>
+                </small>
+              </div>
+            </li>
+            
+            <li class="align-right" *ngIf="order.summary.billed.couverttax" >
+              <small>Couvert pago</small>&nbsp;<div class="price color-warn"><span>R$</span> {{order.summary.billed.couverttax| currency : 'BRL' : '' : '1.2-2' : 'pt'}}</div>
+            </li>
+    
+            <li class="align-right" >
+              <small>Total pago</small>&nbsp;<div class="price color-warn"><span>R$</span> {{order.summary.billed.total | currency : 'BRL' : '' : '1.2-2' : 'pt'}}</div>
+            </li>
+          </ng-template>
+    
+          <ng-template #emptyBilledTemplate >
+            <li class="centralized" >
+              <small>Nenhum ítem para ser exibido</small>
+            </li>
+          </ng-template>
+        </ul>
+    
+        <br/>
+        <div class="divider" ></div>
+        <br/>
+    
+        <p class="align-right" *ngIf="order.lastsyncat" >
+          <small>Última atualização {{formatTime(order.lastsyncat)}}</small>
+        </p>
+  
+        <div class="app-actions" *ngIf="order.pocstatus < SummaryOrderPocStatus.close_request" >
+          <button class="mat-button mat-flat-button primary" (click)="onClickHome()" >
+            Continuar pedindo
+          </button>
+          <button *ngIf="order.pocstatus > SummaryOrderPocStatus.pendent"
+            class="mat-button mat-stroked-button color-primary" (click)="onClickCloseRequest()" >
+            <span class="mat-icon">payments</span> &nbsp;
+            Fechar a conta
+          </button>
+        </div>
+      </ng-template>
+  
+      <ng-template #notSummaryTemplate >
+        <br/>
+        <p class="centralized" >A sua conta ainda não foi registrada</p>
+        <br/>
+        <div class="app-actions">
+          <button class="mat-button mat-stroked-button color-primary" (click)="onClickHome()">Continuar pedindo</button>
+        </div>
+      </ng-template>
+      
+    </div>
+  </ng-template>
+
+  <br/>
+  <br/>
+  <br/>
+</div>
+
+
+<div class="app-nav">
+  <ul class="ul">
+    <li>
+      <button class="bt-icon" (click)="onClickQrScanner()">
+        <span class="mat-icon">qr_code_scanner</span>
+        <label>Escanear</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickUser()">
+        <span class="mat-icon icon-outlined">account_circle</span>
+        <label>Usuário</label>
+      </button>
+    </li>
+
+    <li>
+      <button (click)="onClickHome()" class="bt-icon">
+        <span class="mat-icon">
+          <img alt="Logotipo do Ta na mão" class="icon-button-logo" src="../../assets/icons/asset_2.png" width="32"
+            height="32">
+        </span>
+        <label>Início</label>
+      </button>
+    </li>
+
+    <li>
+      <button class="bt-icon" (click)="onClickSummary()" >
+        <span class="mat-icon">local_atm</span>
+        <label>Conta</label>
+      </button>
+    </li>
+
+    <li *ngIf="items$ | async as items">
+      <button class="bt-icon" [attr.badge]="items.length" [matBadgeHidden]="items.length === 0"
+        (click)="onClickBasket()">
+        <span class="mat-icon icon-outlined">shopping_basket</span>
+        <label>Cesta</label>
+      </button>
+    </li>
+  </ul>
+</div>

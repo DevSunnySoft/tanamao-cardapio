@@ -1,0 +1,119 @@
+.mat-form
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: stretch
+
+.mat-error
+  font-size: 12px
+
+.mat-input, label
+  font-weight: 300
+
+.mat-form-field
+  position: relative
+  display: block
+  border-radius: 5px
+  min-height: 65px
+  margin-bottom: 5px
+  margin-top: 5px
+  font-size: 14px
+
+.mat-flex-field
+  display: flex
+  flex-direction: row
+  align-items: center
+  width: 100%
+  box-sizing: border-box
+  border: solid #d8dbf1 1px
+  background-color: var(--input)
+  color: var(--primary-color)
+  margin: 1px 1px 6px 1px
+  border-radius: 5px
+
+.mat-label
+  position: absolute
+  z-index: 1
+  margin-left: 10px
+  margin-top: 0
+  pointer-events: none
+  white-space: nowrap
+  padding: 0 5px 0 2px
+  background-color: var(--input)
+  color: var(--color-wipedout)
+  max-width: 90%
+  overflow: hidden
+  animation: delevate forwards .4s
+
+.mat-input, mat-select input
+  width: inherit
+  font-size: inherit
+  padding: 14px 14px 14px
+  border-radius: 5px
+  color: inherit
+  background-color: transparent
+  border: none
+  outline: none
+
+mat-select.mat-input
+  display: flex
+  padding: 0
+
+.mat-input:focus, .mat-form-field.ng-touched .mat-flex-field
+  border-color: var(--primary)
+  border-width: 2px
+
+.mat-form-field.ng-touched .mat-flex-field
+  margin: 0px 0px 5px 0
+
+.mat-form-field.ng-invalid .mat-flex-field
+  border-color: var(--warn)
+
+.mat-form-field.ng-invalid
+  animation: bounce none 0.3s
+  -o-animation-iteration-count: 1
+
+.mat-form-field.ng-invalid .mat-label
+  color: var(--warn)
+
+.mat-suffix,.mat-prefix
+  position: relative
+  color: inherit
+
+.mat-label.elevate
+  animation: elevate forwards .4s
+  color: var(--primary)
+
+@keyframes elevate
+  from
+    transform: translateY(0)
+    font-size: 14px
+  to
+    transform: translateY(-20px)
+    font-size: 12px
+
+@keyframes delevate
+  from
+    transform: translateY(-20px)
+    font-size: 12px
+  to
+    transform: translateY(0)
+    font-size: 14px
+
+@keyframes bounce
+  0%
+    transform: translateX(0px)
+  37%
+    transform: translateX(5px)
+  55%
+    transform: translateX(-5px)
+  73%
+    transform: translateX(4px)
+  82%
+    transform: translateX(-4px)
+  91%
+    transform: translateX(2px)
+  96%
+    transform: translateX(-2px)
+  100%
+    transform: translateX(none)

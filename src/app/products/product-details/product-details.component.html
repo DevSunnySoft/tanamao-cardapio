@@ -1,0 +1,138 @@
+<div class="app-sheet">
+  <header class="app-title">
+    <button class="bt-icon" (click)="onClickKeep()" >
+      <span class="mat-icon">navigate_before</span>
+    </button>
+    <small>
+      <a (click)="onClickKeep()" >
+        <strong class="color-primary">Início</strong>
+      </a>&nbsp;>&nbsp;
+      <a *ngIf="product" (click)="onClickCategory(product.category?._id)" >
+        <strong class="color-primary">{{product.category?.name}}</strong>
+      </a>
+    </small>
+    <button class="bt-icon" (click)="onClickBasket()" >
+      <span class="mat-icon">shopping_basket</span>
+    </button>
+  </header>
+
+  <ng-template [ngIf]="product">
+    <ng-template
+      [ngIf]="product.isavailable === false || (product.isavailable === true && product.supplymanagement === true && product.stock <= 0)"
+      [ngIfElse]="availableTemplate">
+      <div class="app-section">
+        <div>
+          <small>cod:{{product.barcode}}</small>
+        </div>
+        <div *ngIf="product.images.length === 1" class="image-viewer centralized">
+          <img appImgLazy [src]="loadImage(product.images)" width="auto" height="auto" />
+        </div>
+
+        <p><strong>{{product.product}}</strong></p>
+
+        <div class="product-price price color-primary"
+          *ngIf="product.campaign === undefined; else withCampaignTemplate">
+          <span>R$</span> {{ product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+        </div>
+
+        <ng-template #withCampaignTemplate>
+          <div class="product-price price canceled">
+            <del><span>de R$</span> {{product.campaign?.oldcashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}</del>
+          </div>
+          <div class="product-price price color-primary">
+            <span>por R$</span> <strong>{{ product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' :
+              'pt'}}</strong>
+          </div>
+        </ng-template>
+
+        <small>Indisponível no momento</small>
+      </div>
+    </ng-template>
+
+    <ng-template #availableTemplate>
+      <div class="app-section">
+        <div><small>cod:{{product.barcode}}</small></div>
+
+        <div *ngIf="product.images.length === 1" class="image-viewer centralized">
+          <img appImgLazy [src]="loadImage(product.images)" width="auto" height="auto" />
+        </div>
+
+        <p><strong>{{product.product}}</strong></p>
+
+        <div class="product-price price color-primary"
+          *ngIf="product.campaign === undefined; else withCampaignTemplate">
+          <span>R$</span> {{ product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+        </div>
+
+        <ng-template #withCampaignTemplate>
+          <div class="product-price price canceled">
+            <del><span>de R$</span> {{product.campaign?.oldcashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}</del>
+          </div>
+          <div class="product-price price color-primary">
+            <span>por R$</span> <strong>{{ product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' :
+              'pt'}}</strong>
+          </div>
+        </ng-template>
+
+        <div>
+          <mat-qtd-selector [minqtd]="product.settings && product.settings.minqtd ? product.settings.minqtd : 0"
+            [stock]="product.stock" [supplymanagement]="false" [measure]="product.measure"
+            [localquantity$]="localquantity$" (qtd)="onChangeQtd($event)">
+          </mat-qtd-selector>
+        </div>
+
+        <div>
+
+        </div>
+
+      </div>
+      <br />
+      <mat-accordion [containerTemplate]="obsTemplate" [show]="false" label="Como prefere o produto?"
+        showLabel="Toque para escrever">
+        <ng-template #obsTemplate>
+          <div class="app-section">
+            <div id="obs-box">
+              <textarea [formControl]="txobs" rows="2" maxlength="100"></textarea>
+              <small>{{txobs.value.length}}/100</small> <br />
+              <small>Se necessário, digite aqui como prefere esse produto</small>
+            </div>
+          </div>
+        </ng-template>
+      </mat-accordion>
+      <br />
+
+      <div class="app-actions">
+
+        <ng-template [ngIf]="itemindex >= 0" [ngIfElse]="notSelected">
+          <button (click)="onClickRemove()" class="mat-button mat-stroked-button color-warn">
+            Remover item da cesta
+          </button>
+          <button (click)="onClickBasket()" class="mat-button mat-flat-button primary">
+            Ver minha cesta
+          </button>
+        </ng-template>
+
+        <ng-template #notSelected>
+          <button (click)="onClickBuy()" class="mat-button mat-flat-button primary">
+            Adicionar à cesta
+          </button>
+          <button (click)="onClickBasket()" class="mat-button mat-stroked-button color-primary">
+            Ver minha cesta
+          </button>
+        </ng-template>
+
+      </div>
+    </ng-template>
+
+    <br/>
+
+    <div class="app-section" *ngIf="product.description">
+      <p><strong>Descrição do produto</strong></p> <br/>
+      <p>{{product.description}}</p>
+    </div>
+  </ng-template>
+
+  <div *ngIf="demanding" class="centralized">
+    <div class="spinner"></div>
+  </div>
+</div>

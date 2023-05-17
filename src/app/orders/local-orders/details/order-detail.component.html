@@ -1,0 +1,89 @@
+<div #dialog class="mat-dialog" id="dialog" (click)="$event.stopPropagation()" [@slideXToggleAnimation] *ngIf="show" >
+  <div class="dialog-body">
+    <header class="app-title dialog-title">
+      <button class="bt-icon color-basic" mat-icon-button (click)="onClickClose()" aria-label="Voltar" >
+        <span class="mat-icon" >navigate_before</span>
+      </button>
+      <h1>Detalhes do pedido <small></small></h1>
+      <button class="bt-icon color-basic" mat-icon-button (click)="onClickClose()" aria-label="Cancelar" >
+        <span class="mat-icon" >check</span>
+      </button>
+    </header>
+
+    <div class="dialog-content">
+      <div class="app-basket-sheet" >
+        <div *ngFor="let basketitem of data.data.basket.items" class="app-section basket-item" >
+          <ng-template [ngIf]="basketitem.product.header" [ngIfElse]="retailTemplate">
+            <div class="basket-item-title">
+              <h5>
+                <ng-template [ngIf]="basketitem.product.header.qtdselection > 1"
+                  [ngIfElse]="headerOneSelectionTemplate">
+                  Combo
+                  {{basketitem.product.header.category.name}} ({{basketitem.product.header.qtdselection}}
+                  sabores)</ng-template>
+                <ng-template #headerOneSelectionTemplate>{{basketitem.product.data[0].product.product}}
+                </ng-template>
+              </h5>
+
+              <div></div>
+            </div>
+    
+            <div class="basket-item-description">
+              <ng-template [ngIf]="basketitem.product.data.length > 1"
+                [ngIfElse]="descriptionOneSelectionTemplate">
+                <div class="basket-grid-flavor-list" *ngFor="let flavor of basketitem.product.data">
+                  <p>{{flavor.product.product}}</p>
+                  <p><small [innerHTML]="getRelevant(flavor.components)"></small></p>
+                </div>
+              </ng-template>
+    
+              <ng-template #descriptionOneSelectionTemplate>
+                <p><small [innerHTML]="getRelevant(basketitem.product.data[0].components)"></small></p>
+              </ng-template>
+    
+              <ng-template [ngIf]="basketitem.product.border">
+                <b>Borda:</b> {{basketitem.product.border.product}}<br />
+              </ng-template>
+            </div>
+    
+            <div *ngIf="basketitem.product.obs && basketitem.product.obs.length > 0">
+              <small>Observação digitada: {{basketitem.product.obs}}</small>
+            </div>
+    
+            <div class="basket-item-action">    
+              <div class="price color-accent" >
+                <span>Valor R$</span> {{basketitem.price | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+              </div>
+            </div>
+          </ng-template>
+    
+          <ng-template #retailTemplate>
+            <div class="basket-item-title" >
+              <div class="basket-item-title-left" >
+                <img appLazyImg
+                  *ngIf="basketitem.product.images.length > 0"
+                  [src]="loadImage(basketitem.product.images[0])" [alt]="'Foto de ' + basketitem.product.product"
+                  height="50px" width="auto"  />
+                <h5>{{basketitem.product.product}}</h5>
+              </div>
+            </div>
+    
+            <div *ngIf="basketitem.obs && basketitem.obs.length > 0">
+              <small>Observação digitada:</small> {{basketitem.obs}}
+            </div>
+    
+            <div class="basket-item-action">
+              <div>
+                <small>Quantidade:</small> {{getQuantityDescription(basketitem.qtd, basketitem.product.measure)}}
+              </div>
+    
+              <div class="price color-accent">
+                <span>Valor R$</span> {{basketitem.price | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
