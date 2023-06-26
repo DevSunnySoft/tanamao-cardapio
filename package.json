@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng run tanamao-cardapio:app-shell:production",
+    "build": "ng run tanamao-cardapio:build:production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "deploy": "firebase deploy --only hosting:tanamao-cardapio-7cce4"
@@ -29,8 +29,8 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^14.2.1",
-    "@angular/cli": "~14.2.1",
+    "@angular-devkit/build-angular": "^14.2.11",
+    "@angular/cli": "~14.2.11",
     "@angular/compiler-cli": "^14.2.11",
     "@types/hammerjs": "^2.0.41",
     "@types/jasmine": "~4.0.0",

@@ -42,6 +42,7 @@ import { CloseComponent } from './orders/close/close.component';
 import { OrderDetailComponent } from './orders/local-orders/details/order-detail.component';
 import { LocationComponent } from './orders/checkout/location/location.component';
 import { SignComponent } from './users/sign/sign.component';
+import { MatMaskModule } from './material/mat-mask/mat-mask.module';
 
 registerLocaleData(localePt);
 
@@ -85,6 +86,7 @@ registerLocaleData(localePt);
     MatFormFieldModule,
     MatInputModule,
     MatLabelModule,
+    MatMaskModule
   ],
   providers: [
     TitleCasePipe,

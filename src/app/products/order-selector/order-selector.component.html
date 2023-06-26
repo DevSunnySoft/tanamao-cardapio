@@ -213,43 +213,42 @@
         <div class="editor-components" *ngIf="borders.length > 0">
           <mat-accordion badge="1" [matBadgeHidden]="(order.border$ | async) ? false : true"
             [containerTemplate]="bordersTemplate" [show]="isborderexpanded" label="Escolha uma borda recheada">
-          </mat-accordion>
-
-          <div class="app-section">
-            <ng-template #bordersTemplate>
-              <ul class="ul">
-                <li *ngFor="let border of borders">
-                  <p *ngIf="isBorderSelected((order.border$ | async), border) === true; else templateNotAdded">
-                    <a (click)="onClickRemoveBorder()">
-                      <button class="bt-icon color-accent" aria-label="Remover item">
-                        <span class="mat-icon">check_circle_outline</span>
-                      </button>
-                      {{border.product.product}}
-                      <div class="price color-accent">
-                        <span> + R$</span> {{border.product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' :
-                        'pt'}}
-                      </div>
-                    </a>
-                  </p>
-
-                  <ng-template #templateNotAdded>
-                    <p>
-                      <a (click)="onClickAddBorder(border.product)">
-                        <button class="bt-icon color-basic" aria-label="Adicionar item">
-                          <span class="mat-icon">add_circle_outline</span>
+            <div class="app-section">
+              <ng-template #bordersTemplate>
+                <ul class="ul">
+                  <li *ngFor="let border of borders">
+                    <p *ngIf="isBorderSelected((order.border$ | async), border) === true; else templateNotAdded">
+                      <a (click)="onClickRemoveBorder()">
+                        <button class="bt-icon color-accent" aria-label="Remover item">
+                          <span class="mat-icon">check_circle_outline</span>
                         </button>
-                        {{ border.product.product }}
+                        {{border.product.product}}
                         <div class="price color-accent">
                           <span> + R$</span> {{border.product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' :
                           'pt'}}
                         </div>
                       </a>
                     </p>
-                  </ng-template>
-                </li>
-              </ul>
-            </ng-template>
-          </div>
+  
+                    <ng-template #templateNotAdded>
+                      <p>
+                        <a (click)="onClickAddBorder(border.product)">
+                          <button class="bt-icon color-basic" aria-label="Adicionar item">
+                            <span class="mat-icon">add_circle_outline</span>
+                          </button>
+                          {{ border.product.product }}
+                          <div class="price color-accent">
+                            <span> + R$</span> {{border.product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' :
+                            'pt'}}
+                          </div>
+                        </a>
+                      </p>
+                    </ng-template>
+                  </li>
+                </ul>
+              </ng-template>
+            </div>
+          </mat-accordion>
         </div>
       </ng-template>
 

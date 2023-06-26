@@ -29,7 +29,7 @@ export class MatAccordionComponent implements OnInit {
   constructor(
     private _cdr: ChangeDetectorRef
   ) {
-    this._cdr.detach()
+    //this._cdr.detach()
   }
 
   @Input()

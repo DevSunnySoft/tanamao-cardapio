@@ -3,7 +3,7 @@ import { Router } from "@angular/router";
 import { catchError, distinctUntilChanged, firstValueFrom, map, Observable, of, Subscription, take } from "rxjs";
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from "@angular/common/http";
 import { webSocket } from 'rxjs/webSocket';
-import { retry, RetryConfig } from 'rxjs/operators'
+import { RetryConfig } from 'rxjs/operators'
 import { environment } from "src/environments/environment";
 import { AppService } from "../app.service";
 import IUser from "./user";
@@ -51,6 +51,12 @@ export class UsersService {
         this._appService.ws.unsubscribe()
 
       this._appService.ws = obs.subscribe((msg: any) => this.getUnreadNotifications(msg))
+    }
+  }
+
+  private handleError<T>(result: T, showError = false) {
+    return (error: HttpErrorResponse): Observable<T> => {
+      return of(result as T);
     }
   }
 
@@ -194,67 +200,13 @@ export class UsersService {
     )
   }
 
-  public confirmUser(sessionid: string, notificationid: string): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-type': 'application/json'
-    })
-
-    let params = new HttpParams()
-    params = params.set('sessionid', sessionid)
-    params = params.append('notificationid', notificationid)
-
-    return this._http.put(`${this._publicurl}/confirmation`, {}, { params, headers }).pipe(
-      take(1),
-      catchError((args: HttpErrorResponse): Observable<{ error: HttpErrorResponse }> => of({ error: args })),
-      map(response => {
-        if (response && 'error' in response)
-          return { success: false, error: response.error }
-
-        return { success: true }
-      })
-    )
-  }
-
-  public cadastreGsi(data: any): Observable<{success: boolean, error?: HttpErrorResponse}> {
-    const headers = new HttpHeaders({ 'Content-type': 'application/json' })
-
-    return this._http.post(`${environment.servers_urls.main}/public/users/gsi`, data, {headers}).pipe(
-      catchError((args: HttpErrorResponse): Observable<{error: HttpErrorResponse}> => of({error: args})),
-      take(1),
-      map((response: any)=> {
-        if('error' in response)
-          return {success: false, error: response.error}
-
-        this._appService.auth = {jwt: { token: response.token }}
-        return {success: true}
-      })
-    )
-  }
-
-  public cadastreFb(name: string, username: string, userid: string): Observable<{success: boolean, error?: HttpErrorResponse}> {
-    const data = {name, username, userid}
-    const headers = new HttpHeaders({ 'Content-type': 'application/json' })
-    
-    return this._http.post(`${environment.servers_urls.main}/public/users/fb`, data, {headers}).pipe(
-      catchError((args: HttpErrorResponse): Observable<{error: HttpErrorResponse}> => of({error: args})),
-      take(1),
-      map((response: any)=> {
-        if('error' in response)
-          return {success: false, error: response.error}
-
-        this._appService.auth = {jwt: { token: response.token }}
-        return {success: true}
-      })
-    )
-  }
-
-  public login(username: string, password: string, method: string): Observable<{ success: boolean, error?: string }> {
+  public login(username: string, password: string): Observable<{ success: boolean, error?: string }> {
     const credentials = btoa(`${username}:${password}`)
     const headers = {
       'Content-type': 'application/json',
       'Authorization': `Basic ${credentials}`
     }
-    return this._http.post<any>(`${environment.servers_urls.main}/auth`, { method }, { headers }).pipe(
+    return this._http.post<any>(`${environment.servers_urls.main}/auth`, null, { headers }).pipe(
       catchError((args: HttpErrorResponse): Observable<{ error: HttpErrorResponse }> => of({ error: args })),
       take(1),
       map((response: any) => {
@@ -284,14 +236,31 @@ export class UsersService {
     })
   }
 
-  public cadastre(name: string, username: string, password: string, photourl: string, method: 'self' | 'google' | 'facebook'): Observable<{ success: boolean, error?: HttpErrorResponse }> {
-    const data = { name, username, password, method, photourl }
+  public cadastre(name: string, password: string, confirmationId: string):Observable<{success: boolean, error?: HttpErrorResponse}> {
+    const data = {name, password, confirmationId}
     const headers = new HttpHeaders({ 'Content-type': 'application/json' })
 
-    return this._http.post(`${environment.servers_urls.main}/public/users`, data, { headers }).pipe(
-      catchError((args: HttpErrorResponse): Observable<{ error: HttpErrorResponse }> => of({ error: args })),
+    return this._http.post(`${environment.servers_urls.main}/public/users`, data, {headers}).pipe(
+      catchError((args: HttpErrorResponse): Observable<{error: HttpErrorResponse}> => of({error: args})),
       take(1),
-      map(response => ('error' in response) ? { success: false, error: response.error } : { success: true })
+      map(response => ('error' in response ) ? { success: false, error: response.error} : {success: true })
+    )
+  }
+
+  public createTemporaryUser(name: string, phone: string):Observable<{success: boolean, error?: HttpErrorResponse}> {
+    const data = {name, phone}
+    const headers = new HttpHeaders({ 'Content-type': 'application/json' })
+
+    return this._http.post(`${environment.servers_urls.main}/public/users/temporary`, data, {headers}).pipe(
+      catchError((args: HttpErrorResponse): Observable<{error: HttpErrorResponse}> => of({error: args})),
+      take(1),
+      map((response: any) => {
+        if ('error' in response)
+          return { success: false, error: response.error }
+
+        this._appService.auth = { jwt: { token: response.token } }
+        return { success: true }
+      })
     )
   }
 
@@ -320,5 +289,46 @@ export class UsersService {
       catchError(this._appService.handleError(false)),
       map(response => response ? true : false)
     )
+  }
+
+  
+  public validatePhone(phone: string): Observable<any> {
+    let params = new HttpParams();
+    params = params.set('phone', phone);
+    
+    return this._http.get(`${environment.servers_urls.main}/public/users/phonevalidation`, {params})
+      .pipe(catchError(this.handleError(null)));
+  }
+
+  public getConfirmation(confirmationId: string): Observable<any> {
+    return this._http.get(`${environment.servers_urls.main}/public/users/phonevalidation/${confirmationId}`)
+      .pipe(catchError(this.handleError(null)));
+  }
+
+  public validatePhoneCode(confirmationId: string, code: string): Observable<any> {
+    let params = new HttpParams()
+    params = params.set('code', code);
+
+    return this._http.get(`${environment.servers_urls.main}/public/users/codeverification/${confirmationId}`, { params })
+      .pipe(catchError(this.handleError(false)));
+  }
+
+  public createUserConfirmation(phone: string, userToConfirm: string): Observable<any> {
+    let headers = new HttpHeaders();
+    headers = headers.set('Content-type', 'application/json');
+    
+    const data = {
+      phone,
+      userId: userToConfirm === "new" ? undefined : userToConfirm
+    }
+    return this._http.post(`${environment.servers_urls.main}/public/users/phonevalidation`, data, {headers})
+      .pipe(catchError(this.handleError(null)));
+  }
+
+  public retryUserConfirmation(confirmationId: string): Observable<any> {
+    let headers = new HttpHeaders();
+    headers = headers.set('Content-type', 'application/json');
+    return this._http.post(`${environment.servers_urls.main}/public/users/phonevalidation/${confirmationId}`, null, {headers})
+      .pipe(catchError(this.handleError(null)));
   }
 }

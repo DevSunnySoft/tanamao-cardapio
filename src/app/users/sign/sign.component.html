@@ -7,6 +7,7 @@
     <form *ngIf="!userToConfirm; else userToConfirmTemplate"
       class="sign-form box-shadow" [formGroup]="phoneForm" 
       (submit)="onSubmitSign($event)"  >
+
       <p>Para prosseguir</p>
       <h2>Informe o número do seu celular</h2>
   
@@ -73,10 +74,12 @@
         [ngClass]="{'mat-flat-button': true, 'primary': true, 'ng-hide': !codeForm.valid}" >
         Continuar
       </button>
-      
-      <button type="submit" mat-button 
-        class="mat-stroked-button primary" >
-        Não recebi o código
+      <br/>
+      <p class="align-center" >Não recebeu o código?</p>
+      <p>&nbsp;</p>
+      <button type="button" mat-button (click)="onClickTryAgain()"
+        [ngClass]="{'mat-stroked-button': true, 'primary': true, 'disabled': counter > 0}" >
+        Tente novamente {{counter > 0 ? counter : ''}}
       </button> <br/>
     </form>
   </ng-template>
@@ -85,6 +88,7 @@
     <form class="sign-form box-shadow" [formGroup]="signupForm" (submit)="onSubmitSignupForm($event)"  >
       <p>Para continuar</p>
       <h2>{{recovery ? 'Recupere sua conta' : 'Complete seu cadastro'}}</h2>
+
       <mat-form-field appearance="outline" >
         <div class="mat-flex-field" >
           <mat-label>Digite o seu nome</mat-label>
@@ -100,8 +104,8 @@
         <div class="mat-flex-field" >
           <mat-label>Crie uma senha</mat-label>
           <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" required role="password" />
-          <button type="button" mat-icon-button matSuffix (click)="hide = !hide" aria-label="Mostrar senha" >
-            <mat-icon inline >{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+          <button type="button" class="bt-icon"  (click)="hide = !hide" aria-label="Mostrar senha" >
+            <span class="mat-icon icon-outlined inline" >{{ hide ? 'visibility_off' : 'visibility' }}</span>
           </button>
         </div>
   
@@ -133,8 +137,8 @@
           <mat-label>Digite sua senha</mat-label>
           <input matInput [type]="hide ? 'password' : 'text'" 
             formControlName="password" required role="password" #siginPasswordInput />
-          <button type="button" mat-icon-button matSuffix (click)="hide = !hide" aria-label="Mostrar senha" >
-            <mat-icon inline >{{ hide ? 'visibility_off' : 'visibility' }}</mat-icon>
+          <button type="button" class="bt-icon"  (click)="hide = !hide" aria-label="Mostrar senha" >
+            <span class="mat-icon icon-outlined inline" >{{ hide ? 'visibility_off' : 'visibility' }}</span>
           </button>
         </div>
 
@@ -156,31 +160,70 @@
     </form>
 
     <ng-template #recoveryTemplate >
-      <h2>Recuperação de conta</h2> <br/>
-      <p>Enviaremos um SMS contendo um código de recuperação para o número: <span class="term">{{signinUsername.value}}</span> </p> <br/>
-      
-      <div class="align-center">
+      <div class="sign-form box-shadow" >
+        <h2 class="align-center" >Recuperação de conta</h2> <br/>
+        <p class="align-justify" >
+          Enviaremos um SMS contendo um código de recuperação para o número <strong class="term">{{signinUsername.value}}</strong>
+        </p> <br/>
+        
         <button type="button" mat-button class="mat-flat-button primary" (click)="onClickRecovery()" >
           Enviar SMS de recuperação
+        </button> <br/>
+        <button type="button" mat-button class="mat-stroked-button primary" (click)="onClickRefresh()" >
+          Voltar
         </button>
       </div>
     </ng-template>
   </ng-template>
+
+  <ng-template [ngIf]="action === 'temporary'" >
+    <form class="sign-form box-shadow" [formGroup]="temporaryForm" (submit)="onSubmitTemporaryForm()"  >
+      <h2>Indentificação do usuário</h2>
+      <p>Para continuar, insira as informações</p>
+
+      <mat-form-field appearance="outline" >
+        <div class="mat-flex-field" >
+          <mat-label>Digite o seu nome</mat-label>
+          <input matInput type="text" autocomplete="off" formControlName="name" required role="name" autofocus />
+        </div>
+  
+        <p class="mat-error color-warn" *ngIf="temporaryname && temporaryname.touched && temporaryname.errors && temporaryname.errors['required']" >Por favor, informe o seu nome</p>
+        <p class="mat-error color-warn" *ngIf="temporaryname && temporaryname.touched && temporaryname.errors && !temporaryname.errors['required'] && temporaryname.errors['minlength']">Por favor, informe o seu nome</p>
+        <p class="mat-error color-warn" *ngIf="temporaryname && temporaryname.touched && temporaryname.errors && !temporaryname.errors['required'] && temporaryname.errors['invalid_format']" >Isso não é um nome</p>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" >
+        <div class="mat-flex-field sign-field" >
+          <span matPrefix class="spn-prefix" >&nbsp;+55</span>
+          <mat-label class="sign-phone-label">Número do celular com DDD</mat-label>
+          <input matInput mask="(99)99999-9999" type="text" 
+            autocomplete="off" formControlName="phone" 
+            required role="name" autofocus />
+        </div>
+  
+        <p class="mat-error color-warn" *ngIf="temporaryphone && temporaryphone.touched && temporaryphone.errors && temporaryphone.errors['required']" >Por favor, informe o número do seu celular</p>
+        <p class="mat-error color-warn" *ngIf="temporaryphone && temporaryphone.touched && temporaryphone.errors && !temporaryphone.errors['required'] && temporaryphone.errors['invalidPhone']" >Por favor, informe um número válido</p>
+      </mat-form-field>
+
+      <br/>
+
+      <button type="submit" mat-button class="mat-flat-button primary" >
+        Continuar
+      </button>
+    </form>
+  </ng-template>
 </div>
 
-<div class="app-book-nav box-shadow">
-  <ul>
+<div class="app-nav">
+  <ul class="ul">
     <li></li>
     <li>
-      <button
-        mat-icon-button
-        class="icon-button-caption"
-        (click)="onClickHome()"
-        caption="Inicio"
-        aria-label="Inicio" >
-        <mat-icon inline >
-          <img class="icon-button-logo" src="../../assets/icons/asset_2.png" width="32" height="32" >
-        </mat-icon>
+      <button (click)="onClickHome()" class="bt-icon">
+        <span class="mat-icon">
+          <img alt="Logotipo do Ta na mão" class="icon-button-logo" src="../../assets/icons/asset_2.png" width="32"
+            height="32">
+        </span>
+        <label>Início</label>
       </button>
     </li>
     <li></li>

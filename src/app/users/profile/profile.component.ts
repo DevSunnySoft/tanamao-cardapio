@@ -21,21 +21,21 @@ export class ProfileComponent implements AfterViewInit, OnInit, OnDestroy {
 
   public userForm: FormGroup = new FormGroup({
     name: new FormControl(''),
-    email: new FormControl('')
+    username: new FormControl('')
   })
 
   get name(): FormControl {
     return this.userForm.get('name') as FormControl
   }
 
-  get email(): FormControl {
-    return this.userForm.get('email') as FormControl
+  get username(): FormControl {
+    return this.userForm.get('username') as FormControl
   }
 
   private setFormData(data: IUser) {
     this.userForm.setValue({
       name: data.name,
-      email: data.username
+      username: data.phone
     })
   }
 

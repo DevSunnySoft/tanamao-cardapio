@@ -1,19 +1,21 @@
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { UsersService } from "../users.service";
 import { ActivatedRoute, Router } from "@angular/router";
-import { StyleService } from "src/app/utils/browser/style.service";
+//import { StyleService } from "src/app/utils/browser/style.service";
 import { forbidenTextValidator } from "src/app/utils/validators/formValidator";
 import { AppService } from "src/app/app.service";
-
+import { StyleService } from "src/app/utils/styles/styles.service";
+import { Subscription } from "rxjs";
 @Component({
   templateUrl: './sign.component.html',
   styleUrls: ['./sign.component.sass']
 })
-export class SignComponent implements OnInit {
+export class SignComponent implements OnInit, OnDestroy {
   @ViewChild('codeInput') private codeInput?: ElementRef<HTMLInputElement>;
   @ViewChild('siginPasswordInput') private siginPasswordInput?: ElementRef<HTMLInputElement>;
-  public action: 'getPhone' | 'checkCode' | 'awaiting' | 'signup' | 'signin' = 'awaiting';
+  private subscriptions: Array<Subscription> = [];
+  public action: 'getPhone' | 'checkCode' | 'awaiting' | 'signup' | 'signin' | 'temporary' = 'awaiting';
   public hide = true;
   public submited = false;
   public confirmationId: null | string = null;
@@ -23,6 +25,8 @@ export class SignComponent implements OnInit {
   public recovery: boolean = false;
   public userToConfirm?: string
   public isLoading = true
+  public counter: number = 30;
+  private counterInterval?: any;
   
   phoneForm: FormGroup = new FormGroup({
     phone: new FormControl('', forbidenTextValidator("invalidPhone", /^\(\d\d\)\s?\d{4,5}\-\d{4}$/))
@@ -40,6 +44,11 @@ export class SignComponent implements OnInit {
   signinForm = new FormGroup({
     username: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required, Validators.minLength(4)])
+  })
+
+  temporaryForm = new FormGroup({
+    name: new FormControl('', [Validators.required, Validators.minLength(3), forbidenTextValidator('invalid_format', /[a-z]+/i)]),
+    phone: new FormControl('', forbidenTextValidator("invalidPhone", /^\(\d\d\)\s?\d{4,5}\-\d{4}$/))
   })
 
   get phone(): FormControl {
@@ -66,6 +75,14 @@ export class SignComponent implements OnInit {
     return this.signinForm.get('password') as FormControl
   }
 
+  get temporaryname() {
+    return this.temporaryForm.get('name')
+  }
+
+  get temporaryphone() {
+    return this.temporaryForm.get('phone')
+  }
+
   constructor(
     private _router: Router,
     private _route: ActivatedRoute,
@@ -77,25 +94,58 @@ export class SignComponent implements OnInit {
     styleService.loadStyle('mat-form-field');
   }
 
+  private tryAgain() {
+    if (this.confirmationId)
+      this.subscriptions.push(
+        this._usersService.retryUserConfirmation(this.confirmationId).subscribe(response => {
+          if (response) {
+            if (this._appService.isBrowser)
+              window.alert("Código foi enviado novamente")
+
+            this._router.navigate(['sign'], {
+              queryParams:{
+                confirmation: response.confirmationId,
+                checkout: new Date().getTime()
+              },
+              queryParamsHandling: 'merge'
+            })
+          }
+        })
+      )
+  }
+
   private createUserConfirmation() {
-    if (this.userToConfirm)
-      this._usersService.createUserConfirmation(this.phone.value, this.userToConfirm).subscribe(response => {
-        if (response)
-          this._router.navigate(['sign'], {
-            queryParams:{ confirmation: response.confirmationId, checkout: new Date().getTime() }
+    if (this.userToConfirm) {
+      if (!this.submited) {
+        this.submited = true;
+
+        this.subscriptions.push(
+          this._usersService.createUserConfirmation(this.phone.value, this.userToConfirm)
+          .subscribe(response => {
+            if (response)
+              this._router.navigate(['sign'], {
+                queryParams: {
+                  confirmation: response.confirmationId,
+                  checkout: new Date().getTime()
+                },
+                queryParamsHandling: 'merge'
+              });
+
+            this.submited = false;
           })
-      })
+        )
+      }
+    }
   }
 
   private validatePhone() {
     const phone = this.phoneForm.value.phone;
     this._usersService.validatePhone(phone).subscribe(response => {
-      if (response) {        
+      if (response) {  
         if (response.hasFound === true) {
 
           if (response.isConfirmed === false) {
             this.userToConfirm = response.userId;
-            this.userToConfirm = "new";
           } else {
             this.signName = response.name;
             this.signinUsername.setValue(phone);
@@ -116,16 +166,22 @@ export class SignComponent implements OnInit {
   
   private validateCode() {
     if (this.confirmationId)
-      this._usersService.validatePhoneCode(this.confirmationId, this.codeForm.value.code).subscribe(success => {
-        if (success) {
-          this._router.navigate(['sign'], {
-            queryParams:{ confirmation: this.confirmationId, checkout: new Date().getTime() }
-          })
-        } else
-          this.code.setErrors({ validationError: true });
+      this.subscriptions.push(
+        this._usersService.validatePhoneCode(this.confirmationId, this.codeForm.value.code).subscribe(success => {
+          if (success) {
+            this._router.navigate(['sign'], {
+              queryParams: {
+                confirmation: this.confirmationId,
+                checkout: new Date().getTime()
+              },
+              queryParamsHandling: 'merge'
+            })
+          } else
+            this.code.setErrors({ validationError: true });
 
-        this.submited = false;
-      })
+          this.submited = false;
+        })
+      )
     else
       this.onClickRefresh()
   }
@@ -140,88 +196,130 @@ export class SignComponent implements OnInit {
             queryParams:{
               confirmation: response.data.confirmationId,
               checkout: date.getTime()
-            }
+            },
+            queryParamsHandling: 'merge'
           })
         }
       });
   }
 
+  private clearCounterInterval() {
+    if (this.counterInterval)
+      clearInterval(this.counterInterval);
+  }
+
+  private restartCounter() {
+    this.counter = 30;
+    this.counterInterval = setInterval(() => {
+      this.counter--;
+      
+      if (this.counter === 0 && this.counterInterval)
+        this.clearCounterInterval();
+    }, 1000)
+  }
+
   private getConfirmation(): void {
     if (!this.confirmationId)
       return 
+    
+    this.subscriptions.push(
+      this._usersService.getConfirmation(this.confirmationId).subscribe(response => {
+        if (response) {
+          this.confirmation = response
 
-    this._usersService.getConfirmation(this.confirmationId).subscribe(response => {
-      if (response) {
-        this.confirmation = response
+          if (response.isConfirmed) {
+            this.action = 'signup';
 
-        if (response.isConfirmed) {
-          this.action = 'signup';
+            if (response.userName)
+              this.name.setValue(response.userName)
 
-          if (response.userName)
-            this.name.setValue(response.userName)
+            if (response.isRecovery)
+              this.recovery = true
 
-          if (response.isRecovery)
-            this.recovery = true
+            this._cdr.detectChanges();
+          } else {
+            this.action = 'checkCode';
+            this._cdr.detectChanges();
+            this.restartCounter();
 
-          this._cdr.detectChanges();
-        } else {
-          this.action = 'checkCode';
-          this._cdr.detectChanges();
-          setTimeout(() =>
-            this.codeInput?.nativeElement.focus(), 200
-          );
-        }
+            setTimeout(() => this.codeInput?.nativeElement.focus(), 200);
+          }
 
-        this.isLoading = false;
-      } else
-        this.onClickRefresh()
-    })
+          this.isLoading = false;
+        } else
+          this.onClickRefresh()
+      })
+    )
   }
 
   private reditect() {
-    const redirectto = this._route.snapshot.queryParamMap.get('redirectto') || 'me'
+    const redirectto = this._route.snapshot.queryParamMap.get('redirectto') || 'me';
 
-    this._usersService.getLogged().subscribe((response: any) => {
-      if (this._appService.isbrowser && response)
-        window.location.href = `./${redirectto}`
-    })
+    this.subscriptions.push(
+      this._usersService.getLogged()
+      .subscribe(response => {
+        
+        if (this._appService.isBrowser && response)
+          window.location.href = `./${redirectto}`
+          
+      })
+    )
   }
 
   private cadastre() {
     //this._subscriptions.push(
     const formValue = this.signupForm.value;
-    this._usersService.cadastre(formValue.name, formValue.password, this.confirmationId!).subscribe(response => {
-      if (response.success === true) {
-        const subscription = this._usersService.login(this.confirmation.phone, formValue.password).subscribe(response => {
-          if (response.success === true)
-            this.reditect();
+    
+    this.subscriptions.push(
+      this._usersService.cadastre(formValue.name!, formValue.password!, this.confirmationId!).subscribe(response => {
+        if (response.success === true) {
+          
+          this.subscriptions.push(
+            this._usersService.login(this.confirmation.phone, formValue.password!).subscribe(response => {
+              if (response.success === true)
+                this.reditect();
 
+              this.submited = false;
+            })
+          )
+        }
+        else if (response.error && response.error.status === 409)
           this.submited = false;
-          subscription.unsubscribe();
-        })
-      }
-      else if (response.error && response.error.status === 409)
-        this.submited = false;
-      else
-        this.submited = false;
-    })
+        else
+          this.submited = false;
+      })
+    )
     //)
+  }
+
+  private createTemporaryUser() {
+    const formValue = this.temporaryForm.value;
+    
+    this.subscriptions.push(
+      this._usersService.createTemporaryUser(formValue.name!, formValue.phone!).subscribe(response => {
+        if (response.success === true) {
+          this.reditect();
+        }
+        
+        this.submited = false;
+      })
+    )
   }
 
   private login() {
     const formValue = this.signinForm.value
 
     this.formErrorMessage = ''
-    //this._subscriptions.push(
-    this._usersService.login(formValue.username, formValue.password).subscribe(response => {
-      if (response.success === true)
-        this.reditect()
-      else
-        this.loginError(response, true)
+    this.subscriptions.push(
+      this._usersService.login(formValue.username!, formValue.password!).subscribe(response => {
+        if (response.success === true)
+          this.reditect()
+        else
+          this.loginError(response, true)
 
-      this.submited = false;
-    })
-    //)
+        this.submited = false;
+      })
+    )
   }
 
   private loginError(response: any, self: boolean) {
@@ -256,6 +354,8 @@ export class SignComponent implements OnInit {
   }
 
   onSubmitCodeForm(ev: Event): void {
+    ev.preventDefault();
+    
     if (this.codeForm.valid  && !this.submited) {
       this.submited = true;
       this.validateCode();
@@ -279,6 +379,13 @@ export class SignComponent implements OnInit {
     }
   }
 
+  onSubmitTemporaryForm() {
+    if (this.temporaryForm.valid && !this.submited) {
+      this.submited = true;
+      this.createTemporaryUser();
+    }
+  }
+
   onClickRecovery() {
     this.accountRecovery()
   }
@@ -292,26 +399,44 @@ export class SignComponent implements OnInit {
   }
 
   onClickRefresh() {
-    if (this._appService.isbrowser)
+    if (this._appService.isBrowser)
       window.location.href = './sign';
   }
 
+  onClickTryAgain() {
+    if (this.counter === 0)
+      this.tryAgain();
+  }
+
   ngOnInit(): void {
-    this.recovery = false;
-    this.hide = true;
-    
-    this._route.queryParamMap.subscribe(params => {
-      this.confirmationId = params.get('confirmation');
+    if (this._appService.company?.allowtemporaryusers) {
+      this.isLoading = false;
+      this.action = 'temporary';
+    } else {
+      this.recovery = false;
+      this.hide = true;
+      
+      this.subscriptions.push(
+        this._route.queryParamMap.subscribe(params => {
+          this.confirmationId = params.get('confirmation');
 
-      if (this.confirmationId)
-        this.getConfirmation();
-      else {
-        this.action = 'getPhone';
-        this.isLoading = false;
-      }
+          this.clearCounterInterval();
 
-      this._cdr.detectChanges()
-    })
+          if (this.confirmationId)
+            this.getConfirmation();
+          else {
+            this.action = 'getPhone';
+            this.isLoading = false;
+          }
+
+          this._cdr.detectChanges()
+        })
+      )
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe())
   }
 
 }

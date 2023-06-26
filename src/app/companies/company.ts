@@ -38,6 +38,7 @@ export interface ICompany {
   wildcards: Array<string>
   avgdelivery: number
   avglocal: number
+  allowtemporaryusers: boolean
   businesscatalogs: Array<{
     _id: string,
     name: string,

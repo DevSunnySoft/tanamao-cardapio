@@ -6,9 +6,9 @@ export const environment = {
   production: false,
   servers_urls: {
     images: 'https://storage.googleapis.com/ta-na-mao-f41a6.appspot.com',
-    main: 'https://api.tanamao.delivery',
+    //main: 'https://api.tanamao.delivery',
     //main: 'https://tests.tanamao.delivery',
-    //main: 'http://192.168.1.161:8080',
+    main: 'http://192.168.1.159:8081',
     ws: "wss://messenger.tanamao.delivery"
   },
   credentials: {
