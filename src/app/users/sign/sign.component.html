@@ -143,6 +143,7 @@
         </div>
 
         <p class="mat-error color-warn" *ngIf="signinPassword && signinPassword.touched && signinPassword.errors && signinPassword.errors['required']" >Informe sua senha para entrar</p>
+        <p class="mat-error color-warn" *ngIf="signinPassword && signinPassword.touched && signinPassword.errors && !signinPassword.errors['required'] && signinPassword.errors['invalid']" >Senha incorreta</p>
       </mat-form-field>
       <div>
         <a class="form-anchor" (click)="recovery = true" >Esqueci a minha senha</a>

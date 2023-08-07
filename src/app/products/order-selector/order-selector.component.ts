@@ -29,7 +29,7 @@ export class OrderSelectorComponent implements OnInit, AfterViewInit, OnDestroy 
   public txobs: FormControl = new FormControl()
   public borders: Array<IProductSettingsAdditional> = []
   public drinks: ApiSearchResponse<IProduct, IProductsSearchQuery> = {
-    count: 0,
+    totalCount: 0,
     data: []
   }
 

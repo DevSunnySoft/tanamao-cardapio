@@ -1,7 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { Observable } from "rxjs";
-import { AppService } from "src/app/app.service";
 import { IOrderBasketItem } from "../order-basket";
 import { OrderOdsService } from "../order.ods.service";
 
@@ -16,15 +15,11 @@ export class BasketComponent implements OnInit {
   public readonly price$ = this._orderOdsService.price$
 
   constructor(
-    private _appService: AppService,
     private _orderOdsService: OrderOdsService,
     private _router: Router,
     private _cdr: ChangeDetectorRef
   ) {
     this._cdr.detach()
-
-    this._appService.company!.businesscatalogs.length > 0 ?
-      this._appService.company!.businesscatalogs[0].isopened : false
   }
 
   private goNext() {

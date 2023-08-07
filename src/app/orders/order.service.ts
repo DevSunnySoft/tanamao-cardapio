@@ -48,7 +48,7 @@ export class OrderService {
     params = params.append('sort', 'recent')
 
     return this._http.get<ApiSearchResponse<LocalOrder, any>>(this.localorderurl, { params }).pipe(
-      catchError(this._appService.handleError({data: [], count: 0}))
+      catchError(this._appService.handleError({data: [], totalCount: 0}))
     )
   }
 

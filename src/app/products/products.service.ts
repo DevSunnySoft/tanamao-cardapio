@@ -41,10 +41,10 @@ export class ProductsService {
 
       return this._http.get<ApiSearchResponse<IProduct, IProductsSearchQuery>>(url, { params }).pipe(
         take(1),
-        catchError(this.handleError<ApiSearchResponse<IProduct, IProductsSearchQuery>>({ count: 0, data: [] }))
+        catchError(this.handleError<ApiSearchResponse<IProduct, IProductsSearchQuery>>({ totalCount: 0, data: [] }))
       )
     } else
-      return of({ data: [], count: 0 })
+      return of({ data: [], totalCount: 0 })
   }
 
   getProductSettingsById(id: string): Observable<IProductSettings> {
@@ -98,11 +98,8 @@ export class ProductsService {
       if (categoryType)
         params = params.append('categorytype', categoryType)
 
-      if (this._appService.company.businesscatalogs.length > 0)
-        this._appService.company.businesscatalogs.forEach(v => {
-          if (v.isopened)
-            params = params.append('catalogandnull[]', v.index)
-        })
+      if (this._appService.company.catalogindex >= 0 && this._appService.company.isopened)
+        params = params.append('catalogandnull[]', this._appService.company.catalogindex);
 
       return this._http.get<ApiSearchResponse<IProductCategory, any>>(`${url}`, { params }).pipe(
         take(1),

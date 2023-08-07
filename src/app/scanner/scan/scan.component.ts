@@ -28,6 +28,7 @@ export class ScanComponent {
   }
 
   private validateData(data: string): boolean {
+    //const regexp = /^https:\/\/.+\/([a-zA-z0-9=]+)$/
     const regexp = /^https:\/\/.+\/([a-zA-z0-9=]+)$/
 
     if (regexp.test(data)) {

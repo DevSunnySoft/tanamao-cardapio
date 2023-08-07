@@ -35,7 +35,7 @@ export class CatalogComponent  implements OnInit, OnDestroy, AfterViewInit {
   public selectedItems: Array<IProduct> = []
   public qtdselection: number = -1
   public txproductsearch: FormControl = new FormControl()
-  public products: ApiSearchResponse<IProduct, any> = { count: 0, data: [] }
+  public products: ApiSearchResponse<IProduct, any> = { totalCount: 0, data: [] }
   public categories: Array<IProductCategory> = []
   public filters: IProductsSearchQuery
   public items: IOrderBasketItem[] = []
@@ -139,7 +139,7 @@ export class CatalogComponent  implements OnInit, OnDestroy, AfterViewInit {
     this.productsSubscription?.unsubscribe()
     
     this.demanding = true
-    this.products = { count: 0, data: [] }
+    this.products = { totalCount: 0, data: [] }
     this.filters.page = 0
 
     if (
@@ -175,7 +175,7 @@ export class CatalogComponent  implements OnInit, OnDestroy, AfterViewInit {
     if (!this.demanding) {
       const next = Number(this.filters.page) + 1
 
-      if (this.products.count > next * (this.filters.limit ? this.filters.limit : this._limitdefault)) {
+      if (this.products.totalCount > next * (this.filters.limit ? this.filters.limit : this._limitdefault)) {
         this.demanding = true
         this.filters.page = next
         this._cdr.detectChanges()
@@ -194,7 +194,7 @@ export class CatalogComponent  implements OnInit, OnDestroy, AfterViewInit {
       .subscribe((response: ApiSearchResponse<IProduct, IProductsSearchQuery>) => {
       if (response) {
         this.products.data.push(...response.data)
-        this.products.count = response.count
+        this.products.totalCount = response.totalCount
         this.demanding = false
 
         if (response.filters)
@@ -418,7 +418,7 @@ export class CatalogComponent  implements OnInit, OnDestroy, AfterViewInit {
           page: 0
         }
 
-        this.products.count = 0;
+        this.products.totalCount = 0;
         this.products.data = []
 
         if (params.has('search')) {

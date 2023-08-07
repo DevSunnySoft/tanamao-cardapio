@@ -1,6 +1,6 @@
 export interface ApiSearchResponse<TData, TFilters> {
-  data: Array<TData>
-  count: number,
+  data: Array<TData>,
+  totalCount: number,
   filters?: TFilters
 }
 

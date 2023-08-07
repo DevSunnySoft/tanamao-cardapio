@@ -32,8 +32,6 @@ export class CompaniesService {
       .pipe(
         catchError(this._appService.handleError<any>(false)),
         map((response: ICompany | undefined) => {
-          console.log(35, response);
-
           if (response) {
             this._appService.company = response
             this._document.documentElement.style.setProperty('--company-color', response.stylecolor || '#111111')

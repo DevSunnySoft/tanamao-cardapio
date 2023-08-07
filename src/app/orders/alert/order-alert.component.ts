@@ -36,7 +36,7 @@ export class OrderAlertComponent implements AfterViewInit, OnInit, OnDestroy {
 
   private resumeOrder(resume: any, status: LocalOrderStatus): void {
     const idx = resume.findIndex((item: any) => item._id === status)
-    this.resume[status] = (idx >= 0) ? resume[idx].count : 0
+    this.resume[status] = (idx >= 0) ? resume[idx].totalCount : 0
   }
 
   private getSummaryOrder(): void {
@@ -90,10 +90,9 @@ export class OrderAlertComponent implements AfterViewInit, OnInit, OnDestroy {
 
   public ngOnInit(): void {    
     this._subscriptions.push(
-      this._appService.onnotificationchange.subscribe(() => {
-        console.count('notificationChange')
+      this._appService.onnotificationchange.subscribe(() =>
         this.getSummaryOrder()
-      })
+      )
     )
     
     this._cdr.detectChanges()

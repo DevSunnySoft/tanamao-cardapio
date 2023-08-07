@@ -206,7 +206,7 @@ export class UsersService {
       'Content-type': 'application/json',
       'Authorization': `Basic ${credentials}`
     }
-    return this._http.post<any>(`${environment.servers_urls.main}/auth`, null, { headers }).pipe(
+    return this._http.post<any>(`${environment.servers_urls.main}/public/auth`, null, { headers }).pipe(
       catchError((args: HttpErrorResponse): Observable<{ error: HttpErrorResponse }> => of({ error: args })),
       take(1),
       map((response: any) => {

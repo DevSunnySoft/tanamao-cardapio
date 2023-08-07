@@ -21,7 +21,7 @@ export class OrderSelectorOdsService {
   private _products: BehaviorSubject<Array<IProduct>> = new BehaviorSubject(<Array<IProduct>>[])
 
   private _borderlist: BehaviorSubject<Array<IProductSettingsAdditional>> = new BehaviorSubject(<Array<IProductSettingsAdditional>>[])
-  public _drinklist: BehaviorSubject<ApiSearchResponse<IProduct, IProductsSearchQuery>> = new BehaviorSubject(<ApiSearchResponse<IProduct, IProductsSearchQuery>>{ count: 0, data: [] })
+  public _drinklist: BehaviorSubject<ApiSearchResponse<IProduct, IProductsSearchQuery>> = new BehaviorSubject(<ApiSearchResponse<IProduct, IProductsSearchQuery>>{ totalCount: 0, data: [] })
 
   // lista de bordas adicionaveis que cada produto do combo
   public borders: Array<IProductSettingsAdditional> = []
@@ -236,7 +236,10 @@ export class OrderSelectorOdsService {
       .getProducts(data.filters ? data.filters : {})
       .subscribe((response: any) => {
         drinklist.push(...response.data)
-        this._drinklist.next({ data: drinklist, count: response.count })
+        this._drinklist.next({
+          data: drinklist,
+          totalCount: response.totalCount
+        })
 
         cb()
         sub.unsubscribe()

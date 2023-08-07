@@ -127,7 +127,6 @@ export class SummaryOrderComponent implements AfterViewInit, OnInit, OnDestroy {
   ngOnInit(): void {
     this._subscriptions.push(
       this._appService.onnotificationchange.subscribe(() => {
-        console.count('notificationChange')
         if (this.order)
           this.getOrder(this.order._id)
       })

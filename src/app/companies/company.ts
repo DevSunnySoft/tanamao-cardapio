@@ -39,16 +39,12 @@ export interface ICompany {
   avgdelivery: number
   avglocal: number
   allowtemporaryusers: boolean
-  businesscatalogs: Array<{
-    _id: string,
-    name: string,
-    hourmin: number,
-    hourmax: number,
-    now: number,
-    dif: number,
-    isopened: boolean,
-    index: number
-  }>
+  catalogindex: number
+  catalogname?: string
+  isopened: boolean
+  closeatwithtz?: string
+  closeat?: string
+  lastcommunicationat?: string
   businesscategory: IBusinessCategory
   isdeliveryactive?: boolean
   islocalactive?: boolean

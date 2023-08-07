@@ -278,6 +278,8 @@ export class SignComponent implements OnInit, OnDestroy {
             this._usersService.login(this.confirmation.phone, formValue.password!).subscribe(response => {
               if (response.success === true)
                 this.reditect();
+              else
+                this.loginError(response, true);
 
               this.submited = false;
             })
@@ -323,6 +325,7 @@ export class SignComponent implements OnInit, OnDestroy {
   }
 
   private loginError(response: any, self: boolean) {
+    console.log(response);
     if (response.error.status === 401 || response.error.status === 409) {
       switch (response.error.error.message) {
         case 'invalid_username':
