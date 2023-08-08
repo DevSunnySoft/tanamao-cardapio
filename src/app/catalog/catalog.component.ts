@@ -427,7 +427,7 @@ export class CatalogComponent  implements OnInit, OnDestroy, AfterViewInit {
         }
 
         if (params.has('orderby') !== null)
-          this.filters.orderby = params.get('orderby');
+          this.filters.sortName = params.get('orderby');
 
         if (params.has('category'))
           this.selectCategory(params.get('category'))

@@ -53,8 +53,10 @@
 
     <ul class="ul ul-grid scroll-x mat-chips">
       <li *ngFor="let list of sortList">
-        <button (click)="onClickOrderBy(list.value)" class="mat-button color-primary"
-          [ngClass]="[filters && filters.orderby === list.value ? 'primary' : 'basic']">
+        <button 
+          (click)="onClickOrderBy(list.value)" 
+          class="mat-button color-primary" 
+          [ngClass]="[filters && filters.sortName === list.value ? 'primary' : 'basic']" >
           <span>{{list.label}}</span>
         </button>
       </li>

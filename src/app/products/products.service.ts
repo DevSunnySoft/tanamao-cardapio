@@ -39,6 +39,8 @@ export class ProductsService {
           params = params.append(key, String(args[key]))
       }
 
+      console.log(params);
+
       return this._http.get<ApiSearchResponse<IProduct, IProductsSearchQuery>>(url, { params }).pipe(
         take(1),
         catchError(this.handleError<ApiSearchResponse<IProduct, IProductsSearchQuery>>({ totalCount: 0, data: [] }))

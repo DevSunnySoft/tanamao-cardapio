@@ -4,7 +4,7 @@ export interface IProductsSearchQuery {
   search?: string | null
   categoryid?: string
   categorytype?: 'D' | 'F'
-  orderby?: string | null
+  sortName?: string | null
   ordertype?: OrderType
 }
 
