@@ -43,6 +43,8 @@ import { OrderDetailComponent } from './orders/local-orders/details/order-detail
 import { LocationComponent } from './orders/checkout/location/location.component';
 import { SignComponent } from './users/sign/sign.component';
 import { MatMaskModule } from './material/mat-mask/mat-mask.module';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from 'src/environments/environment';
 
 registerLocaleData(localePt);
 
@@ -86,7 +88,13 @@ registerLocaleData(localePt);
     MatFormFieldModule,
     MatInputModule,
     MatLabelModule,
-    MatMaskModule
+    MatMaskModule,
+    ServiceWorkerModule.register('custom-service-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
   providers: [
     TitleCasePipe,

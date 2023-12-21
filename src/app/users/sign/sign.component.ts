@@ -51,27 +51,27 @@ export class SignComponent implements OnInit, OnDestroy {
     phone: new FormControl('', forbidenTextValidator("invalidPhone", /^\(\d\d\)\s?\d{4,5}\-\d{4}$/))
   })
 
-  get phone(): FormControl {
+  get phone() {
     return this.phoneForm.get('phone') as FormControl
   }
 
-  get code(): FormControl {
+  get code() {
     return this.codeForm.get('code') as FormControl
   }
 
-  get name(): FormControl {
+  get name() {
     return this.signupForm.get('name') as FormControl
   }
 
-  get password(): FormControl {
+  get password() {
     return this.signupForm.get('password') as FormControl
   }
 
-  get signinUsername(): FormControl {
+  get signinUsername() {
     return this.signinForm.get('username') as FormControl
   }
 
-  get signinPassword(): FormControl {
+  get signinPassword() {
     return this.signinForm.get('password') as FormControl
   }
 
@@ -325,7 +325,6 @@ export class SignComponent implements OnInit, OnDestroy {
   }
 
   private loginError(response: any, self: boolean) {
-    console.log(response);
     if (response.error.status === 401 || response.error.status === 409) {
       switch (response.error.error.message) {
         case 'invalid_username':
@@ -402,8 +401,15 @@ export class SignComponent implements OnInit, OnDestroy {
   }
 
   onClickRefresh() {
-    if (this._appService.isBrowser)
-      window.location.href = './sign';
+    if (this._appService.isBrowser) {
+      let uri = './sign';
+      const redirectTo = this._route.snapshot.queryParamMap.get('redirectto');
+
+      if (redirectTo)
+        uri += `?redirectto=${redirectTo}`;
+
+      window.location.href = uri;
+    }
   }
 
   onClickTryAgain() {
@@ -441,5 +447,4 @@ export class SignComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe())
   }
-
 }

@@ -6,7 +6,7 @@ import { environment } from "src/environments/environment";
 import { AppService } from "../app.service";
 import { ApiSearchResponse } from "../utils/global";
 import { LocalOrder } from "./local-order";
-import { ISummaryOrder, SummaryOrderPocStatus } from "./summary-order";
+import { ISummaryOrder, SummaryOrderPocStatus, SummaryOrderSyncStatus } from "./summary-order";
 
 @Injectable({
   providedIn: "root"
@@ -40,6 +40,13 @@ export class OrderService {
     private _router: Router
   ) {}
 
+  private finalize() {
+    this._appService.log = 'Conta finalizada com sucesso!';
+    this.scanHash = null;
+    
+    this._appService.clearLoginData();
+    this._router.navigate([`sign`]);
+  }
 
   public getOrders(summaryid: string): Observable<ApiSearchResponse<LocalOrder, any>> {
     let params = new HttpParams()
@@ -48,13 +55,27 @@ export class OrderService {
     params = params.append('sort', 'recent')
 
     return this._http.get<ApiSearchResponse<LocalOrder, any>>(this.localorderurl, { params }).pipe(
-      catchError(this._appService.handleError({data: [], totalCount: 0}))
+      catchError((e: any) => {
+        console.log(e);
+        if (e.status === 401)
+          if (this._appService.company && this._appService.company.allowtemporaryusers)
+            this.finalize();
+
+        return of({data: [], totalCount: 0});
+      })
     )
   }
 
   public getSummaryOrder(summaryid: string): Observable<ISummaryOrder | undefined> {
     return this._http.get<ISummaryOrder | undefined>(`${this.summaryrderurl}/${summaryid}`).pipe(
-      catchError(this._appService.handleError(undefined))
+      catchError((e: any) => {
+
+        if (e.status === 401)
+          if (this._appService.company && this._appService.company.allowtemporaryusers)
+            this.finalize();
+
+        return of(undefined);
+      })
     )
   }
 

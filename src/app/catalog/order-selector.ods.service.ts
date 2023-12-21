@@ -553,7 +553,10 @@ export class OrderSelectorOdsService {
                 //if (response.additional) {
               this.additionals[itemindex] = response.filter((item: any) => item.additionaltype !== 'B')
               this.borders.push(...response.filter((value: any) => {
-                return value.additionaltype === 'B' && this.borders.findIndex((v: any) => String(v.additionalid) === String(value.additionalid)) === -1
+                return value.additionaltype === 'B' 
+                  && value.product.isavailable
+                  && value.product.isactive
+                  && this.borders.findIndex((v: any) => String(v.additionalid) === String(value.additionalid)) === -1
               }))
                 //}
               //}

@@ -14,13 +14,18 @@
 
 .catalog-item-description
   grid-area: descriptionArea
-  max-height: 5.8rem
+
+.catalog-item-description small
+  max-height: 6.5rem
   min-height: 2.5rem
-  overflow: hidden
+  line-height: 1.3
   word-break: normal
+  display: block
   display: -webkit-box
   -webkit-line-clamp: 5
   -webkit-box-orient: vertical
+  text-overflow: ellipsis
+  overflow: hidden
 
 .catalog-item-action
   grid-area: actionArea

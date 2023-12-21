@@ -167,4 +167,15 @@ export class AppService {
     }
   }
 
+  public clearLoginData() {
+    this.user = undefined
+    this.auth = undefined
+
+    if (window)
+      window.localStorage.removeItem(`_A`)
+
+    if (this.ws)
+      this.ws.unsubscribe();
+  }
+
 }

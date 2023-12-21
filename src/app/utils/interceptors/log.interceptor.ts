@@ -42,7 +42,6 @@ export class LogInterceptor implements HttpInterceptor {
         (error: any) => {
           ok = 'failed'
 
-          console.log(error)
           switch (error.status) {
             case 0:
               this._appService.networkStatus = TNetworkStatus.offline

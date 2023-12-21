@@ -1,6 +1,5 @@
 import { DOCUMENT } from "@angular/common";
 import { ChangeDetectorRef, Component, Inject, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
 import { AppService } from "../app.service";
 
 @Component({

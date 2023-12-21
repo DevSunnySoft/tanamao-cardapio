@@ -32,7 +32,9 @@ export class ProductsService {
   getProducts(args: any): Observable<ApiSearchResponse<IProduct, IProductsSearchQuery>> {
     if (this._appService.company) {
       const url = `${this.productUrl}/${this._appService.company._id}`
-      let params = new HttpParams
+      let params = new HttpParams;
+
+      params = params.append('onlysaleable', 'true');
 
       for (let key in args) {
         if (typeof args[key] !== 'undefined')

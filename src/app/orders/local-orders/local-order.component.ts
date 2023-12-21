@@ -47,15 +47,21 @@ export class LocalOrderComponent implements AfterViewInit, OnInit, OnDestroy {
     if (this.summaryOrderId) {
       firstValueFrom(this._ordersService.getOrders(this.summaryOrderId))
       .then(response => {
-        if (response.data.findIndex(order => order.syncstatus === LocalOrderSyncStatus.pendent) === -1)
-          this.sendingOrders = false
-        else
-          this.sendingOrders = true
-  
-        this.isLoading = false
-        this.noOrder = false
-        this._orders.next(response.data)
-        this._cdr.detectChanges()
+        if (response.data.length > 0) {
+          if (response.data.findIndex(order => order.syncstatus === LocalOrderSyncStatus.pendent) === -1)
+            this.sendingOrders = false
+          else
+            this.sendingOrders = true
+
+          this.noOrder = false
+          this._orders.next(response.data)
+        } else {
+          this.sendingOrders = false;
+          this.noOrder = true;
+        }
+
+        this.isLoading = false;
+        this._cdr.detectChanges();
       })
     }
   }

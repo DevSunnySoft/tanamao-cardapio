@@ -223,16 +223,8 @@ export class UsersService {
     this._http.delete<any>(`${environment.servers_urls.main}/logout`).pipe(
       catchError(this._appService.handleError('error'))
     ).subscribe((response: any) => {
-      this._appService.user = undefined
-      this._appService.auth = undefined
-
-      if (window)
-        window.localStorage.removeItem(`_A`)
-
-      if (this._appService.ws)
-        this._appService.ws.unsubscribe();
-
-      this._router.navigate([`sign`])
+      this._appService.clearLoginData();
+      this._router.navigate([`sign`]);
     })
   }
 

@@ -1,5 +1,4 @@
-import { DOCUMENT } from "@angular/common";
-import { ChangeDetectorRef, Component, Inject, NgZone } from "@angular/core";
+import { ChangeDetectorRef, Component, NgZone } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import QrScanner from 'qr-scanner';
 import { AppService } from "src/app/app.service";
@@ -73,12 +72,15 @@ export class ScanComponent {
         this.videoElem = window.document.getElementById('videoElem') as HTMLVideoElement
 
       if (this.videoElem) {
-        this.scanner = new QrScanner(this.videoElem,
-          result => this.read(result), {
+        this.scanner = new QrScanner(
+          this.videoElem,
+          result => this.read(result), 
+          {
             highlightScanRegion: true,
             maxScansPerSecond: 10,
             highlightCodeOutline: true
-          })
+          }
+        )
 
         this.flashOn = this.scanner.isFlashOn()
 

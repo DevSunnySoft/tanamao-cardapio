@@ -400,7 +400,6 @@ export class CatalogComponent  implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     if (this._appService.isBrowser && window) {
-      console.log(window.innerWidth);
       if (window && window.innerWidth > 800)
         this._limitdefault = 18
     }
