@@ -77,7 +77,7 @@ export class ScanComponent {
           result => this.read(result), 
           {
             highlightScanRegion: true,
-            maxScansPerSecond: 10,
+            maxScansPerSecond: 30,
             highlightCodeOutline: true
           }
         )

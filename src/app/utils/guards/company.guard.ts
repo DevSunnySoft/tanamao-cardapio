@@ -16,17 +16,30 @@ export class CompanyGuard implements CanActivate {
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    if (!this._orderService.scanHash) {
+    const scanHashParams = route.paramMap.get('qrcode');
+    let scanHash = this._orderService.scanHash
+    const fromSelfScan = scanHash ? true : false
+
+    if (!scanHash)
+      scanHash = route.paramMap.get('qrcode');
+
+    
+    if (!scanHash && !scanHashParams) {
       this._router.navigate(['scanner'])
-      
       return of(false)
     }
 
-    const filter = {scanhash: this._orderService.scanHash}
-    return this._companiesService.companyGuard(filter).pipe(
+    const filter = {scanhash: scanHash}
+    return this._companiesService.companyGuard(filter, fromSelfScan).pipe(
       tap(value => {
-        if (!value)
+        if (!value) {
           this._orderService.scanHash = null
+          this._router.navigate(['scanner'])
+        } else
+        if (!this._orderService.scanHash) {
+          this._orderService.scanHash = scanHash
+        }
+          
       })
     )
   }

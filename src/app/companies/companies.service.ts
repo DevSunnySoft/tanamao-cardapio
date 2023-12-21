@@ -22,7 +22,7 @@ export class CompaniesService {
     @Inject(DOCUMENT) private _document: Document
   ) {}
 
-  public companyGuard(filter: any): Observable<boolean> {
+  public companyGuard(filter: any, selfScan: boolean = true): Observable<boolean> {
     let params = new HttpParams()
 
     for (let key in filter)
@@ -33,6 +33,9 @@ export class CompaniesService {
         catchError(this._appService.handleError<any>(false)),
         map((response: ICompany | undefined) => {
           if (response) {
+            if (!response.islocalreadonly && !selfScan)
+              return false
+
             this._appService.company = response
             this._document.documentElement.style.setProperty('--company-color', response.stylecolor || '#111111')
 
