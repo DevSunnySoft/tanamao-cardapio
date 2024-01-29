@@ -42,8 +42,10 @@ export class ImgLazyDirective {
   }
 
   private setZoomClick() {
-    this._el.nativeElement.addEventListener('click', () => {
-
+    this._el.nativeElement.addEventListener('click', (ev: any) => {
+      ev.stopPropagation();
+      ev.preventDefault();
+      
       if (this.zoomed) {
         this._zone.runOutsideAngular(() => {
 

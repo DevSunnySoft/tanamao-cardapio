@@ -137,7 +137,7 @@ export class OrderSelectorOdsService {
         let qtd: number = Number(Number(1 / qtdselection * 1).toFixed(2))
         let unitprice = 0
 
-        if (this._orderSelector.header.qtdselection >= this._orderSelector.header.category.qtdselchargehigher) {
+        if (this._orderSelector.header.qtdselection > this._orderSelector.header.category.qtdselchargehigher) {
           this._orderSelector.data.forEach(item => {
             if (item.product.prices.cashpayment > unitprice)
               unitprice = item.product.prices.cashpayment

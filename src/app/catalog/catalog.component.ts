@@ -363,6 +363,10 @@ export class CatalogComponent  implements OnInit, OnDestroy, AfterViewInit {
     //this.order.deleteDrink(id)
   }
 
+  public navigateToCampaign(productId: string) {
+    this._router.navigate([`trend/${productId}`])
+  }
+
   ngAfterViewInit(): void {
     if (this.catalogElements) {
       this._subscriptions.push(

@@ -1,0 +1,63 @@
+<div class="app-sheet" *ngIf="company" >
+  <header class="app-title" >
+    <button class="bt-icon" (click)="onClickBack()">
+      <span class="mat-icon" >navigate_before</span>
+    </button>
+    <h1>{{company.name}}</h1>
+  </header>
+
+  <div class="app-book-sheet" *ngIf="product; else notfoundTemplate" >
+    <div class="align-center">
+      <div [ngClass]="{'round-img': true, 'online': company.isopened}" > 
+        <img app-img-lazy [src]="getCompanyImages(company.urilogo)"  />
+      </div>
+      <!--
+      <button [ngClass]="['app-book-feat', 'color-white', company.isopened ? 'bg-online' : 'bg-accent']" >
+        <span class="mat-icon inline" >access_time</span> {{businessStatusText(company)}}
+      </button>
+      -->
+    </div>
+
+    <div>
+      <div class="image-viewer align-center" >
+        <img appImgLazy [src]="loadImage(product.images, '380x380')" width="auto" height="auto" />
+      </div>
+  
+      <div class="align-right">
+        <ng-template [ngIf]="product.campaign" [ngIfElse]="withoutCampaignTemplate" >
+          <div class="price canceled" >
+            <span>de R$</span> <del>{{product.campaign.oldcashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}</del>
+          </div>
+          <div class="price color-accent" >
+            <span>por R$</span> {{product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+          </div>  
+        </ng-template>
+        <ng-template #withoutCampaignTemplate >
+          <div class="price color-accent" >
+            <span>R$</span> {{product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+          </div>
+        </ng-template>
+      </div>
+      
+      <h2>{{product.product}}</h2>
+      <p>{{product.description}}</p>
+      <br/>
+
+      <ul *ngFor="let component of components" >
+        <li>
+          <b>{{component.name}} ({{ component.qtdselection + ' ' +(component.qtdselection > 1 ? 'Opções' : 'Opção')}})</b> <br/>
+          <p>
+            {{componentText(component)}}
+          </p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <ng-template #notfoundTemplate >
+    <div class="align-center" >
+      <br/>
+      <p>Produto não encontrado</p>
+    </div>
+  </ng-template>
+</div>

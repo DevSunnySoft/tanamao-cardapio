@@ -91,6 +91,11 @@ const routes: Routes = [
     path: ":qrcode",
     component: CatalogComponent,
     canActivate: [CompanyGuard]
+  },
+  {
+    path: "trend/:id",
+    canActivate: [CompanyGuard],
+    loadChildren: () => import('./trends/trends.module').then(m => m.TrendsModule)
   }
 ];
 

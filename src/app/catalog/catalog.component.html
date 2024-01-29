@@ -64,44 +64,47 @@
   </div>
 
   <div #catalog class="catalog">
-    <div class="catalog-page">
-      <div class="catalog-items products app-section" *ngFor="let product of products.data; let i = index" >
-        <div class="catalog-item-photo">
-          <div class="catalog-item-photo-container centralized" *ngIf="product.images.length > 0">
-            <img appImgLazy [src]="getProductMiniature(product.images)" [zoomed]="getProductImage(product.images)" />
-          </div>
-        </div>
 
-        <div class="catalog-item-title">
-          <div class="promo color-accent" *ngIf="product.campaign">{{product.campaign.name}}</div>
-          <div class="catalog-title-first">
-            <div>
-              <div class="price color-accent" *ngIf="product.campaign === undefined; else withCampaignTemplate">
-                <span>R$</span> {{ product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
-              </div>
-
-              <ng-template #withCampaignTemplate>
-                <div class="price canceled">
-                  <span>de R$</span> 
-                  <del>
-                    {{product.campaign?.oldcashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
-                  </del>
-                </div>
-                <div class="price">
-                  <span>por R$</span> {{ product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
-                </div>
-              </ng-template>
+    <ng-template [ngIf]="readonlyCatalog === false" [ngIfElse]="readOnlyCatalogTemplate" >
+      <div class="catalog-page">
+        <div 
+          class="catalog-items products app-section" 
+          *ngFor="let product of products.data; let i = index" >
+          <div class="catalog-item-photo">
+            <div class="catalog-item-photo-container centralized" *ngIf="product.images.length > 0">
+              <img appImgLazy [src]="getProductMiniature(product.images)" [zoomed]="getProductImage(product.images)" />
             </div>
           </div>
-          <p>{{product.product}}</p>
-        </div>
 
-        <div class="catalog-item-description">
-          <small>{{product.description}}</small>
-        </div>
+          <div class="catalog-item-title" >
+            <div class="promo color-accent" *ngIf="product.campaign">{{product.campaign.name}}</div>
+            <div class="catalog-title-first">
+              <div>
+                <div class="price color-accent" *ngIf="product.campaign === undefined; else withCampaignTemplate">
+                  <span>R$</span> {{ product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+                </div>
 
-        <div class="catalog-item-action">
-          <ng-template [ngIf]="readonlyCatalog === false">
+                <ng-template #withCampaignTemplate>
+                  <div class="price canceled">
+                    <span>de R$</span> 
+                    <del>
+                      {{product.campaign?.oldcashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+                    </del>
+                  </div>
+                  <div class="price">
+                    <span>por R$</span> {{ product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+            <p>{{product.product}}</p>
+          </div>
+
+          <div class="catalog-item-description">
+            <small>{{product.description}}</small>
+          </div>
+
+          <div class="catalog-item-action">
             <ng-template
               [ngIf]="product.isavailable === false || (product.isavailable === true && product.supplymanagement === true && product.stock <= 0)"
               [ngIfElse]="availableTemplate">
@@ -151,10 +154,54 @@
 
               </ng-template>
             </ng-template>
-          </ng-template>
+          </div>
         </div>
       </div>
-    </div>
+    </ng-template>
+
+    <ng-template #readOnlyCatalogTemplate >
+      <div class="catalog-page">
+        <div 
+          class="catalog-items products app-section" 
+          *ngFor="let product of products.data; let i = index"
+          (click)="navigateToCampaign(product._id)" >
+          <div class="catalog-item-photo">
+            <div class="catalog-item-photo-container centralized" *ngIf="product.images.length > 0">
+              <img appImgLazy [src]="getProductMiniature(product.images)" [zoomed]="getProductImage(product.images)" />
+            </div>
+          </div>
+
+          <div class="catalog-item-title" >
+            <div class="promo color-accent" *ngIf="product.campaign">{{product.campaign.name}}</div>
+            <div class="catalog-title-first">
+              <div>
+                <div class="price color-accent" *ngIf="product.campaign === undefined; else withCampaignTemplate">
+                  <span>R$</span> {{ product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+                </div>
+
+                <ng-template #withCampaignTemplate>
+                  <div class="price canceled">
+                    <span>de R$</span> 
+                    <del>
+                      {{product.campaign?.oldcashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+                    </del>
+                  </div>
+                  <div class="price">
+                    <span>por R$</span> {{ product.prices.cashpayment | currency : 'BRL' : '' : '1.2-2' : 'pt'}}
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+            <p>{{product.product}}</p>
+          </div>
+
+          <div class="catalog-item-description">
+            <small>{{product.description}}</small>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    
   </div>
 </ng-template>
   
